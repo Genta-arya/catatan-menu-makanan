@@ -65,8 +65,8 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath = '/' }) => {
 
           {!isLoginPage && (
             <>
-              {/* Desktop Navigation Links */}
-              <nav className="hidden md:flex items-center gap-1">
+              {/* Desktop Navigation Links (Visible on desktop >= 1024px) */}
+              <nav className="hidden lg:flex items-center gap-1.5">
                 {navLinks.map((link) => {
                   const Icon = link.icon;
                   const active = isActive(link.href);
@@ -74,27 +74,27 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath = '/' }) => {
                     <a
                       key={link.href}
                       href={link.href}
-                      className={`px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 transition-all ${
+                      className={`px-3 py-2 rounded-xl text-xs xl:text-sm font-bold flex items-center gap-1.5 whitespace-nowrap transition-all ${
                         active
                           ? 'bg-sage-100 text-sage-900 border border-sage-300/60 shadow-sm'
                           : 'text-sage-600 hover:text-sage-900 hover:bg-sage-50'
                       }`}
                     >
-                      <Icon className={`w-4 h-4 ${active ? 'text-sage-600' : 'text-sage-400'}`} />
-                      <span>{link.label}</span>
+                      <Icon className={`w-4 h-4 shrink-0 ${active ? 'text-sage-600' : 'text-sage-400'}`} />
+                      <span className="whitespace-nowrap">{link.label}</span>
                     </a>
                   );
                 })}
               </nav>
 
-              {/* Right Actions: User Badge, Settings, Logout & Mobile Toggle */}
+              {/* Right Actions: User Badge, Settings, Logout & Mobile/Tablet Toggle */}
               <div className="flex items-center gap-2">
                 {isLoggedIn && (
-                  <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-sage-100/80 rounded-xl border border-sage-200 text-xs font-bold text-sage-800">
+                  <div className="flex items-center gap-1.5 px-3 py-1.5 bg-sage-100/80 rounded-xl border border-sage-200 text-xs font-bold text-sage-800">
                     <div className="w-5 h-5 rounded-full bg-sage-600 text-white flex items-center justify-center text-[10px]">
                       R
                     </div>
-                    <span>Radha</span>
+                    <span className="hidden sm:inline">Radha</span>
                   </div>
                 )}
 
@@ -116,10 +116,11 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath = '/' }) => {
                   </button>
                 )}
 
-                {/* Mobile Menu Toggle Button */}
+                {/* Mobile & Tablet Menu Toggle Button */}
                 <button
                   onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                  className="md:hidden p-2.5 rounded-xl hover:bg-sage-100 border border-sage-200 text-sage-700"
+                  className="lg:hidden p-2.5 rounded-xl hover:bg-sage-100 border border-sage-200 text-sage-700"
+                  title="Menu Navigasi"
                 >
                   {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
                 </button>
@@ -128,9 +129,9 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath = '/' }) => {
           )}
         </div>
 
-        {/* Mobile Dropdown Menu */}
+        {/* Mobile & Tablet Dropdown Menu */}
         {!isLoginPage && isMobileMenuOpen && (
-          <div className="md:hidden border-t border-sage-200 bg-white p-4 space-y-2 shadow-lg animate-fadeIn">
+          <div className="lg:hidden border-t border-sage-200 bg-white p-4 space-y-2 shadow-lg animate-fadeIn">
             {isLoggedIn && (
               <div className="flex items-center justify-between pb-2 mb-2 border-b border-sage-100 px-2">
                 <div className="flex items-center gap-2 text-sm font-bold text-sage-800">

@@ -21,6 +21,7 @@ import {
   exportAllData,
   importAllData,
 } from '../../services/storage';
+import { toast } from '../../utils/toast';
 
 export const RecipeListManager: React.FC = () => {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
@@ -105,6 +106,7 @@ export const RecipeListManager: React.FC = () => {
     await loadRecipes();
     setSelectedRecipe(recipe);
     setViewState('detail');
+    toast.success('Catatan resep masakan berhasil disimpan!');
   };
 
   const handleDeleteRecipe = async (id: string) => {
@@ -113,6 +115,7 @@ export const RecipeListManager: React.FC = () => {
       await loadRecipes();
       setViewState('list');
       setSelectedRecipe(null);
+      toast.info('Catatan resep telah dihapus.');
     }
   };
 
@@ -124,6 +127,7 @@ export const RecipeListManager: React.FC = () => {
     a.href = url;
     a.download = `catatan-menu-${new Date().toISOString().slice(0, 10)}.json`;
     a.click();
+    toast.success('Cadangan data berhasil diunduh!');
   };
 
   const handleImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -134,10 +138,10 @@ export const RecipeListManager: React.FC = () => {
       if (typeof reader.result === 'string') {
         const ok = await importAllData(reader.result);
         if (ok) {
-          alert('Data berhasil diimpor!');
+          toast.success('Data resep berhasil diimpor!');
           await loadRecipes();
         } else {
-          alert('Format file JSON tidak valid.');
+          toast.error('Format file JSON tidak valid.');
         }
       }
     };

@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import type { ShoppingItem } from '../../types/recipe';
 import { getShoppingList, saveShoppingList } from '../../services/storage';
+import { toast } from '../../utils/toast';
 
 export const ShoppingManager: React.FC = () => {
   const [items, setItems] = useState<ShoppingItem[]>([]);
@@ -106,6 +107,7 @@ export const ShoppingManager: React.FC = () => {
 
     navigator.clipboard.writeText(text);
     setCopied(true);
+    toast.success('Daftar belanja berhasil disalin untuk WhatsApp!');
     setTimeout(() => setCopied(false), 2500);
   };
 

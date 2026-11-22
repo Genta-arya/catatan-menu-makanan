@@ -21,6 +21,7 @@ import {
   getShoppingList,
   saveShoppingList,
 } from '../../services/storage';
+import { toast } from '../../utils/toast';
 
 const DAYS = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'];
 
@@ -108,7 +109,7 @@ export const WeeklyPlanner: React.FC = () => {
     });
 
     if (recipeIds.size === 0) {
-      alert('Belum ada menu yang dijadwalkan pada minggu ini.');
+      toast.warning('Belum ada menu yang dijadwalkan pada minggu ini.');
       return;
     }
 
@@ -142,8 +143,7 @@ export const WeeklyPlanner: React.FC = () => {
     });
 
     await saveShoppingList([...currentShopping, ...newItems]);
-    setNotice(`Berhasil menambahkan bahan dari ${recipeIds.size} menu ke Daftar Belanja!`);
-    setTimeout(() => setNotice(null), 3500);
+    toast.success(`Berhasil menambahkan bahan dari ${recipeIds.size} menu ke Daftar Belanja!`);
   };
 
   const getRecipe = (id?: string) => recipes.find((r) => r.id === id);
@@ -204,8 +204,8 @@ export const WeeklyPlanner: React.FC = () => {
         </div>
       )}
 
-      {/* Grid 7 Days */}
-      <div className="grid grid-cols-1 md:grid-cols-7 gap-4">
+      {/* Grid 7 Days (Responsive: 1 col mobile, 3 cols tablet, 7 cols desktop) */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-7 gap-3.5 sm:gap-4">
         {currentDays.map((day) => {
           const plan = mealPlans[day.dateStr] || { date: day.dateStr };
           const pagiRecipe = getRecipe(plan.pagiRecipeId);

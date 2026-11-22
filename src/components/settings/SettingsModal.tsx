@@ -18,6 +18,7 @@ import {
   importAllData,
   checkVpsDbStatus,
 } from '../../services/storage';
+import { toast } from '../../utils/toast';
 
 interface SettingsModalProps {
   isOpen: boolean;
@@ -55,7 +56,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     await saveUserSettings(settings);
-    alert('Preferensi berhasil disimpan!');
+    toast.success('Preferensi koki berhasil disimpan!');
     onClose();
   };
 
@@ -69,8 +70,9 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
       a.download = `dapur-radha-backup-${new Date().toISOString().slice(0, 10)}.json`;
       a.click();
       URL.revokeObjectURL(url);
+      toast.success('Cadangan data berhasil diunduh!');
     } catch {
-      alert('Gagal mengekspor data.');
+      toast.error('Gagal mengekspor data.');
     }
   };
 
@@ -83,10 +85,10 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
       const content = event.target?.result as string;
       const ok = await importAllData(content);
       if (ok) {
-        setImportStatus('Data berhasil dipulihkan!');
-        setTimeout(() => setImportStatus(''), 3000);
+        toast.success('Data cadangan berhasil dipulihkan!');
+        onClose();
       } else {
-        alert('File cadangan tidak valid.');
+        toast.error('File cadangan tidak valid.');
       }
     };
     reader.readAsText(file);

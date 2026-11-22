@@ -18,6 +18,7 @@ import {
 import type { Recipe } from '../../types/recipe';
 import { MealBadge } from './MealBadge';
 import { saveShoppingList, getShoppingList } from '../../services/storage';
+import { toast } from '../../utils/toast';
 
 interface RecipeDetailProps {
   recipe: Recipe;
@@ -72,8 +73,7 @@ export const RecipeDetail: React.FC<RecipeDetailProps> = ({
     ];
 
     await saveShoppingList([...currentList, ...newItems]);
-    setShoppingNotice(`Semua bahan & bumbu ${recipe.title} berhasil ditambahkan ke Daftar Belanja!`);
-    setTimeout(() => setShoppingNotice(null), 3500);
+    toast.success(`Bahan & bumbu ${recipe.title} ditambahkan ke Daftar Belanja!`);
   };
 
   return (

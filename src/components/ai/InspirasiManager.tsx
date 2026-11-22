@@ -15,6 +15,7 @@ import type { Recipe, MealType } from '../../types/recipe';
 import { getRecipes, saveRecipe } from '../../services/storage';
 import { generateRecipeWithAI } from '../../services/aiService';
 import { MealBadge } from '../recipes/MealBadge';
+import { toast } from '../../utils/toast';
 
 export const InspirasiManager: React.FC = () => {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
@@ -48,7 +49,7 @@ export const InspirasiManager: React.FC = () => {
       : recipes.filter((r) => r.mealTypes.includes(selectedMealType));
 
     if (candidates.length === 0) {
-      alert('Tidak ada resep untuk kategori waktu makan ini.');
+      toast.warning('Tidak ada resep untuk kategori waktu makan ini.');
       return;
     }
 
@@ -120,8 +121,9 @@ export const InspirasiManager: React.FC = () => {
       await saveRecipe(newRecipe);
       setIsSaved(true);
       await loadRecipes();
+      toast.success('Resep rekomendasi berhasil disimpan ke katalog!');
     } catch (err: any) {
-      alert('Gagal menyimpan resep: ' + err.message);
+      toast.error('Gagal menyimpan resep: ' + (err.message || 'Terjadi kesalahan'));
     } finally {
       setIsSaving(false);
     }

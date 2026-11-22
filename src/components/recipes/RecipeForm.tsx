@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import type { Recipe, MealType, IngredientItem, SeasoningItem } from '../../types/recipe';
 import { generateRecipeWithAI, parseRawRecipeWithAI } from '../../services/aiService';
+import { toast } from '../../utils/toast';
 
 interface RecipeFormProps {
   initialRecipe?: Partial<Recipe>;
@@ -242,7 +243,7 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!title.trim()) {
-      alert('Nama masakan tidak boleh kosong!');
+      toast.warning('Nama masakan tidak boleh kosong!');
       return;
     }
 

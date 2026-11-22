@@ -2,6 +2,7 @@
 import '../styles/global.css';
 import { Navbar } from '../components/layout/Navbar';
 import { BottomNav } from '../components/layout/BottomNav';
+import { ToastContainer } from '../components/ui/ToastContainer';
 
 interface Props {
   title?: string;
@@ -60,7 +61,10 @@ const {
       })();
     </script>
   </head>
-  <body class="min-h-screen flex flex-col font-sans bg-sage-50 antialiased pb-20 md:pb-8">
+  <body class="min-h-screen flex flex-col font-sans bg-sage-50 antialiased pb-20 lg:pb-8">
+    <!-- Global Floating Toast Notification Container -->
+    <ToastContainer client:load />
+
     <!-- Desktop & Mobile Top Header Navbar -->
     <Navbar client:load currentPath={currentPath} />
 
@@ -69,13 +73,13 @@ const {
       <slot />
     </main>
 
-    <!-- Mobile Fixed Bottom Navigation Bar (Hidden on login page) -->
+    <!-- Mobile & Tablet Fixed Bottom Navigation Bar (Hidden on login page) -->
     {currentPath !== '/login' && currentPath !== '/login/' && (
       <BottomNav client:load currentPath={currentPath} />
     )}
 
     <!-- Simple Footer for Desktop -->
-    <footer class="hidden md:block border-t border-sage-200/80 bg-white/60 py-6 text-center text-xs text-sage-500 font-medium">
+    <footer class="hidden lg:block border-t border-sage-200/80 bg-white/60 py-6 text-center text-xs text-sage-500 font-medium">
       <div class="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
         <p>© 2026 Dapur Radha • Dibuat dengan cinta & kelezatan rasa.</p>
         <p class="flex items-center gap-1.5 text-sage-600">
