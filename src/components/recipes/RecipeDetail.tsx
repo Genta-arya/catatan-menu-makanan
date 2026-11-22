@@ -21,6 +21,7 @@ import {
   Check,
   X,
   Tag,
+  ZoomIn,
 } from 'lucide-react';
 import type { Recipe } from '../../types/recipe';
 import { MealBadge } from './MealBadge';
@@ -28,6 +29,7 @@ import { saveShoppingList, getShoppingList, saveRecipe } from '../../services/st
 import { toast } from '../../utils/toast';
 import { parseVideoUrl } from '../../utils/videoHelper';
 import { parseMinutes, CATEGORY_PRESETS } from '../../utils/recipeHelper';
+import { ImageLightbox } from '../ui/ImageLightbox';
 
 interface RecipeDetailProps {
   recipe: Recipe;
@@ -53,6 +55,16 @@ export const RecipeDetail: React.FC<RecipeDetailProps> = ({
   const [isSavingCategory, setIsSavingCategory] = useState(false);
   const isInitialPreset = (CATEGORY_PRESETS as readonly string[]).includes(recipe.category || 'Tumisan');
   const [isCustomCategory, setIsCustomCategory] = useState(!isInitialPreset && !!recipe.category);
+
+  // Lightbox Modal States
+  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
+  const [lightboxIndex, setLightboxIndex] = useState(0);
+  const [bumbuLightbox, setBumbuLightbox] = useState<{ image: string; name: string } | null>(null);
+
+  const openLightbox = (index: number) => {
+    setLightboxIndex(index);
+    setIsLightboxOpen(true);
+  };
 
   const prepMinutes = parseMinutes(recipe.prepTime);
   const cookMinutes = parseMinutes(recipe.cookTime);
@@ -144,36 +156,59 @@ export const RecipeDetail: React.FC<RecipeDetailProps> = ({
           <img
             src={images[activeImageIndex]}
             alt={recipe.title}
-            className="w-full h-full object-cover transition-opacity duration-300"
+            onClick={() => openLightbox(activeImageIndex)}
+            className="w-full h-full object-cover transition-opacity duration-300 cursor-zoom-in"
+            title="Klik untuk melihat foto lebih jelas"
           />
+
+          {/* Zoom In Pill Button */}
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              openLightbox(activeImageIndex);
+            }}
+            className="absolute bottom-3 right-3 bg-black/65 hover:bg-black/85 text-white text-xs font-semibold px-2.5 py-1.5 rounded-xl backdrop-blur-md flex items-center gap-1.5 shadow-md transition-all cursor-pointer z-10 hover:scale-105 active:scale-95 border border-white/20"
+            title="Klik untuk melihat foto lebih jelas (Perbesar)"
+          >
+            <ZoomIn className="w-3.5 h-3.5" />
+            <span className="text-[11px] font-bold hidden sm:inline">Lihat Lebih Jelas</span>
+          </button>
 
           {/* Carousel Arrows if > 1 image */}
           {images.length > 1 && (
             <>
               <button
-                onClick={() =>
-                  setActiveImageIndex((prev) => (prev > 0 ? prev - 1 : images.length - 1))
-                }
-                className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-black/50 hover:bg-black/70 text-white flex items-center justify-center backdrop-blur-sm transition-all"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setActiveImageIndex((prev) => (prev > 0 ? prev - 1 : images.length - 1));
+                }}
+                className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-black/50 hover:bg-black/70 text-white flex items-center justify-center backdrop-blur-sm transition-all z-10 cursor-pointer"
+                title="Foto Sebelumnya"
               >
                 <ChevronLeft className="w-5 h-5" />
               </button>
               <button
-                onClick={() =>
-                  setActiveImageIndex((prev) => (prev < images.length - 1 ? prev + 1 : 0))
-                }
-                className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-black/50 hover:bg-black/70 text-white flex items-center justify-center backdrop-blur-sm transition-all"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setActiveImageIndex((prev) => (prev < images.length - 1 ? prev + 1 : 0));
+                }}
+                className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-black/50 hover:bg-black/70 text-white flex items-center justify-center backdrop-blur-sm transition-all z-10 cursor-pointer"
+                title="Foto Selanjutnya"
               >
                 <ChevronRight className="w-5 h-5" />
               </button>
 
               {/* Indicator dots */}
-              <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-1.5 bg-black/40 backdrop-blur-md px-2.5 py-1 rounded-full">
+              <div
+                onClick={(e) => e.stopPropagation()}
+                className="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-1.5 bg-black/40 backdrop-blur-md px-2.5 py-1 rounded-full z-10"
+              >
                 {images.map((_, idx) => (
                   <button
                     key={idx}
                     onClick={() => setActiveImageIndex(idx)}
-                    className={`w-2 h-2 rounded-full transition-all ${
+                    className={`w-2 h-2 rounded-full transition-all cursor-pointer ${
                       idx === activeImageIndex ? 'bg-white w-4' : 'bg-white/50'
                     }`}
                   />
@@ -182,7 +217,7 @@ export const RecipeDetail: React.FC<RecipeDetailProps> = ({
             </>
           )}
 
-          <div className="absolute top-4 left-4 flex gap-1.5">
+          <div className="absolute top-4 left-4 flex gap-1.5 z-10">
             {recipe.mealTypes.map((type) => (
               <MealBadge key={type} type={type} />
             ))}
@@ -190,12 +225,13 @@ export const RecipeDetail: React.FC<RecipeDetailProps> = ({
 
           <button
             type="button"
-            onClick={() => {
+            onClick={(e) => {
+              e.stopPropagation();
               setTempCategory(currentCategory);
               setIsCustomCategory(!(CATEGORY_PRESETS as readonly string[]).includes(currentCategory));
               setShowCategoryModal(true);
             }}
-            className="absolute top-4 right-4 bg-white/95 hover:bg-white text-sage-900 text-xs font-bold px-3 py-1.5 rounded-full shadow-md border border-sage-200 flex items-center gap-1.5 transition-all hover:scale-105 active:scale-95 group backdrop-blur-md cursor-pointer"
+            className="absolute top-4 right-4 bg-white/95 hover:bg-white text-sage-900 text-xs font-bold px-3 py-1.5 rounded-full shadow-md border border-sage-200 flex items-center gap-1.5 transition-all hover:scale-105 active:scale-95 group backdrop-blur-md cursor-pointer z-10"
             title="Klik untuk mengubah jenis / kategori masakan"
           >
             <Tag className="w-3 h-3 text-sage-500" />
@@ -210,10 +246,18 @@ export const RecipeDetail: React.FC<RecipeDetailProps> = ({
             {images.map((img, idx) => (
               <button
                 key={idx}
-                onClick={() => setActiveImageIndex(idx)}
-                className={`relative w-16 h-16 rounded-xl overflow-hidden shrink-0 border-2 transition-all ${
-                  idx === activeImageIndex ? 'border-sage-600 scale-95 shadow-sm' : 'border-transparent opacity-70 hover:opacity-100'
+                type="button"
+                onClick={() => {
+                  if (activeImageIndex === idx) {
+                    openLightbox(idx);
+                  } else {
+                    setActiveImageIndex(idx);
+                  }
+                }}
+                className={`relative w-16 h-16 rounded-xl overflow-hidden shrink-0 border-2 transition-all cursor-pointer ${
+                  idx === activeImageIndex ? 'border-sage-600 scale-95 shadow-sm ring-2 ring-sage-300' : 'border-transparent opacity-70 hover:opacity-100'
                 }`}
+                title={idx === activeImageIndex ? 'Klik lagi untuk memperbesar foto ini' : `Lihat foto ke-${idx + 1}`}
               >
                 <img src={img} alt="Thumbnail" className="w-full h-full object-cover" />
               </button>
@@ -371,7 +415,12 @@ export const RecipeDetail: React.FC<RecipeDetailProps> = ({
                       <img
                         src={sea.image}
                         alt={sea.name}
-                        className="w-10 h-10 rounded-lg object-cover border border-sage-200 shrink-0"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setBumbuLightbox({ image: sea.image!, name: sea.name });
+                        }}
+                        className="w-10 h-10 rounded-lg object-cover border border-sage-200 shrink-0 cursor-zoom-in hover:scale-105 hover:border-sage-400 transition-all shadow-2xs"
+                        title="Klik untuk memperbesar foto bumbu"
                       />
                     ) : (
                       <div className="w-10 h-10 rounded-lg bg-amber-50 border border-amber-200 text-amber-700 flex items-center justify-center shrink-0">
@@ -699,6 +748,26 @@ export const RecipeDetail: React.FC<RecipeDetailProps> = ({
             </div>
           </div>
         </div>
+      )}
+
+      {/* Lightbox Modal for Main Recipe Images (Preview Fullscreen with Prev/Next) */}
+      <ImageLightbox
+        isOpen={isLightboxOpen}
+        images={images}
+        initialIndex={lightboxIndex}
+        title={recipe.title}
+        onClose={() => setIsLightboxOpen(false)}
+      />
+
+      {/* Lightbox Modal for Seasoning / Bumbu Image */}
+      {bumbuLightbox && (
+        <ImageLightbox
+          isOpen={!!bumbuLightbox}
+          images={[bumbuLightbox.image]}
+          initialIndex={0}
+          title={`Foto Bumbu: ${bumbuLightbox.name}`}
+          onClose={() => setBumbuLightbox(null)}
+        />
       )}
     </div>
   );

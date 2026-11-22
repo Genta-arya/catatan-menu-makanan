@@ -26,6 +26,7 @@ import { toast } from '../../utils/toast';
 import { processAndUploadImage } from '../../utils/imageUpload';
 import { parseVideoUrl } from '../../utils/videoHelper';
 import { parseMinutes, CATEGORY_PRESETS } from '../../utils/recipeHelper';
+import { ImageLightbox } from '../ui/ImageLightbox';
 
 interface RecipeFormProps {
   initialRecipe?: Partial<Recipe>;
@@ -73,6 +74,15 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({
   const [videoUrl, setVideoUrl] = useState(initialRecipe?.videoUrl || '');
 
   const parsedVideo = parseVideoUrl(videoUrl);
+
+  // Lightbox Modal for Uploaded Photos
+  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
+  const [lightboxIndex, setLightboxIndex] = useState(0);
+
+  const openLightbox = (idx: number) => {
+    setLightboxIndex(idx);
+    setIsLightboxOpen(true);
+  };
 
   // AI Modal States
   const [isAiLoading, setIsAiLoading] = useState(false);
@@ -577,17 +587,26 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({
         <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
           {images.map((img, idx) => (
             <div key={idx} className="relative aspect-square rounded-2xl overflow-hidden border border-sage-300 group shadow-sm bg-sage-100">
-              <img src={img} alt={`Foto masakan ${idx + 1}`} className="w-full h-full object-cover" />
+              <img
+                src={img}
+                alt={`Foto masakan ${idx + 1}`}
+                onClick={() => openLightbox(idx)}
+                className="w-full h-full object-cover cursor-zoom-in group-hover:scale-105 transition-transform duration-300"
+                title="Klik untuk melihat foto lebih jelas"
+              />
               <button
                 type="button"
-                onClick={() => removeDishImage(idx)}
-                className="absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-black/70 hover:bg-red-600 text-white flex items-center justify-center transition-colors shadow-sm"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  removeDishImage(idx);
+                }}
+                className="absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-black/70 hover:bg-red-600 text-white flex items-center justify-center transition-colors shadow-sm z-10"
                 title="Hapus foto ini"
               >
                 <X className="w-3.5 h-3.5" />
               </button>
               {idx === 0 && (
-                <div className="absolute bottom-1.5 left-1.5 bg-sage-800/80 text-white text-[10px] font-bold px-1.5 py-0.5 rounded backdrop-blur-sm">
+                <div className="absolute bottom-1.5 left-1.5 bg-sage-800/80 text-white text-[10px] font-bold px-1.5 py-0.5 rounded backdrop-blur-sm z-10">
                   Sampul Utama
                 </div>
               )}
@@ -1011,6 +1030,15 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({
           </div>
         </div>
       )}
+
+      {/* Lightbox Modal for Uploaded Recipe Photos */}
+      <ImageLightbox
+        isOpen={isLightboxOpen}
+        images={images}
+        initialIndex={lightboxIndex}
+        title={title ? `Foto: ${title}` : 'Foto Masakan'}
+        onClose={() => setIsLightboxOpen(false)}
+      />
     </form>
   );
 };
