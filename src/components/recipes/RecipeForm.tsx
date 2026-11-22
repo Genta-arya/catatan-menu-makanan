@@ -19,6 +19,7 @@ import {
 import type { Recipe, MealType, IngredientItem, SeasoningItem } from '../../types/recipe';
 import { generateRecipeWithAI, parseRawRecipeWithAI } from '../../services/aiService';
 import { toast } from '../../utils/toast';
+import { processAndUploadImage } from '../../utils/imageUpload';
 
 interface RecipeFormProps {
   initialRecipe?: Partial<Recipe>;
@@ -64,6 +65,7 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({
 
   // AI Modal States
   const [isAiLoading, setIsAiLoading] = useState(false);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [aiError, setAiError] = useState<string | null>(null);
   const [showRawPasteModal, setShowRawPasteModal] = useState(false);
   const [rawText, setRawText] = useState('');
@@ -78,23 +80,31 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({
     }
   };
 
-  // Dish Images handling (Max 5)
-  const handleDishImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // Dish Images handling (Max 5, auto-compressed and uploaded to VPS)
+  const handleDishImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files || files.length === 0) return;
 
     const remainingSlots = 5 - images.length;
     const filesToProcess = Array.from(files).slice(0, remainingSlots);
 
-    filesToProcess.forEach((file) => {
-      const reader = new FileReader();
-      reader.onload = () => {
-        if (typeof reader.result === 'string') {
-          setImages((prev) => (prev.length < 5 ? [...prev, reader.result as string] : prev));
-        }
-      };
-      reader.readAsDataURL(file);
-    });
+    setIsUploadingImage(true);
+    toast.info(`Mengompres dan mengunggah ${filesToProcess.length} foto masakan...`);
+
+    try {
+      const uploadedUrls: string[] = [];
+      for (const file of filesToProcess) {
+        const url = await processAndUploadImage(file, 'resep');
+        uploadedUrls.push(url);
+      }
+      setImages((prev) => [...prev, ...uploadedUrls].slice(0, 5));
+      toast.success(`${uploadedUrls.length} foto masakan berhasil disimpan!`);
+    } catch (err: any) {
+      toast.error('Gagal mengunggah foto: ' + (err.message || 'Terjadi kesalahan'));
+    } finally {
+      setIsUploadingImage(false);
+      e.target.value = '';
+    }
   };
 
   const removeDishImage = (index: number) => {
@@ -127,14 +137,15 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({
     setSeasonings(next);
   };
 
-  const handleSeasoningImageUpload = (index: number, file: File) => {
-    const reader = new FileReader();
-    reader.onload = () => {
-      if (typeof reader.result === 'string') {
-        updateSeasoning(index, 'image', reader.result);
-      }
-    };
-    reader.readAsDataURL(file);
+  const handleSeasoningImageUpload = async (index: number, file: File) => {
+    toast.info('Mengompres dan mengunggah foto bumbu...');
+    try {
+      const url = await processAndUploadImage(file, 'bumbu');
+      updateSeasoning(index, 'image', url);
+      toast.success('Foto bumbu berhasil disimpan!');
+    } catch (err: any) {
+      toast.error('Gagal mengunggah foto bumbu: ' + (err.message || 'Terjadi kesalahan'));
+    }
   };
 
   const removeSeasoning = (index: number) => {
@@ -510,13 +521,23 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({
           {/* Upload Button Slot */}
           {images.length < 5 && (
             <label className="aspect-square rounded-2xl border-2 border-dashed border-sage-300 hover:border-sage-500 bg-sage-50/50 hover:bg-sage-100/50 flex flex-col items-center justify-center cursor-pointer transition-all p-3 text-center">
-              <Camera className="w-6 h-6 text-sage-500 mb-1" />
-              <span className="text-xs font-semibold text-sage-700">Tambah Foto</span>
-              <span className="text-[10px] text-sage-500">Bisa drag / browse</span>
+              {isUploadingImage ? (
+                <>
+                  <div className="w-6 h-6 border-2 border-sage-500 border-t-transparent rounded-full animate-spin mb-1" />
+                  <span className="text-xs font-semibold text-sage-700">Mengunggah...</span>
+                </>
+              ) : (
+                <>
+                  <Camera className="w-6 h-6 text-sage-500 mb-1" />
+                  <span className="text-xs font-semibold text-sage-700">Tambah Foto</span>
+                  <span className="text-[10px] text-sage-500">Bisa drag / browse</span>
+                </>
+              )}
               <input
                 type="file"
                 accept="image/*"
                 multiple
+                disabled={isUploadingImage}
                 className="hidden"
                 onChange={handleDishImageUpload}
               />
