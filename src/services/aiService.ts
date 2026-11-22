@@ -12,6 +12,7 @@ export interface AIRecipeResult {
   cookTime?: number;
   servings?: number;
   notes?: string;
+  videoUrl?: string;
 }
 
 // Clean and extract JSON from model responses (handles reasoning or markdown wrappers)
@@ -188,6 +189,10 @@ Kembalikan HANYA JSON murni (valid JSON) sesuai skema berikut tanpa tambahan mar
     throw new Error('AI tidak berhasil mengurai teks resep ini. Pastikan teks memuat bahan dan bumbu.');
   }
 
+  // Auto-detect any video URL in the raw text
+  const rawVideoMatch = rawRecipeText.match(/https?:\/\/(?:www\.)?(?:youtube\.com|youtu\.be|tiktok\.com|instagram\.com)\/[^\s\)\"\']+/i);
+  const detectedVideoUrl = parsed.videoUrl || (rawVideoMatch ? rawVideoMatch[0] : undefined);
+
   return {
     title: parsed.title,
     category: parsed.category || 'Aneka Masakan',
@@ -199,5 +204,6 @@ Kembalikan HANYA JSON murni (valid JSON) sesuai skema berikut tanpa tambahan mar
     cookTime: Number(parsed.cookTime) || 25,
     servings: Number(parsed.servings) || 4,
     notes: parsed.notes || '',
+    videoUrl: detectedVideoUrl,
   };
 }

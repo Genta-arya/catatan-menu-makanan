@@ -28,6 +28,7 @@ export interface Recipe {
   cookTime?: number;     // minutes
   servings?: number;     // portions
   notes?: string;
+  videoUrl?: string;     // YouTube, TikTok, or Instagram tutorial link
   createdAt: string;
   updatedAt: string;
 }

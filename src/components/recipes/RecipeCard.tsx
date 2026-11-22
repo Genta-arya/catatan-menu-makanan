@@ -1,5 +1,5 @@
 import React from 'react';
-import { Clock, Users, Utensils, Sparkles, Image as ImageIcon } from 'lucide-react';
+import { Clock, Users, Utensils, Sparkles, Image as ImageIcon, Play } from 'lucide-react';
 import type { Recipe } from '../../types/recipe';
 import { MealBadge } from './MealBadge';
 
@@ -49,6 +49,14 @@ export const RecipeCard: React.FC<RecipeCardProps> = ({ recipe, onClick }) => {
         <div className="absolute bottom-2.5 left-2.5 bg-white/90 backdrop-blur-md text-sage-800 text-xs font-semibold px-2.5 py-1 rounded-lg shadow-sm border border-sage-200">
           {recipe.category}
         </div>
+
+        {/* Video Tutorial Pill at bottom right */}
+        {recipe.videoUrl && (
+          <div className="absolute bottom-2.5 right-2.5 bg-red-600/90 backdrop-blur-md text-white text-[11px] font-bold px-2 py-1 rounded-lg shadow-sm flex items-center gap-1">
+            <Play className="w-3 h-3 fill-white" />
+            <span>Video</span>
+          </div>
+        )}
       </div>
 
       {/* Content */}

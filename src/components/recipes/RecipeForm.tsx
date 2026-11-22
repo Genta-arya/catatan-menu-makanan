@@ -15,11 +15,16 @@ import {
   AlertCircle,
   Camera,
   X,
+  Video,
+  Play,
+  Youtube,
+  ExternalLink,
 } from 'lucide-react';
 import type { Recipe, MealType, IngredientItem, SeasoningItem } from '../../types/recipe';
 import { generateRecipeWithAI, parseRawRecipeWithAI } from '../../services/aiService';
 import { toast } from '../../utils/toast';
 import { processAndUploadImage } from '../../utils/imageUpload';
+import { parseVideoUrl } from '../../utils/videoHelper';
 
 interface RecipeFormProps {
   initialRecipe?: Partial<Recipe>;
@@ -62,6 +67,9 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({
   const [cookTime, setCookTime] = useState<number>(initialRecipe?.cookTime || 20);
   const [servings, setServings] = useState<number>(initialRecipe?.servings || 4);
   const [notes, setNotes] = useState(initialRecipe?.notes || '');
+  const [videoUrl, setVideoUrl] = useState(initialRecipe?.videoUrl || '');
+
+  const parsedVideo = parseVideoUrl(videoUrl);
 
   // AI Modal States
   const [isAiLoading, setIsAiLoading] = useState(false);
@@ -241,6 +249,7 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({
       setCookTime(parsed.cookTime || 20);
       setServings(parsed.servings || 4);
       if (parsed.notes) setNotes(parsed.notes);
+      if (parsed.videoUrl) setVideoUrl(parsed.videoUrl);
       setShowRawPasteModal(false);
       setRawText('');
     } catch (err: any) {
@@ -276,6 +285,7 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({
       cookTime,
       servings,
       notes: notes.trim(),
+      videoUrl: videoUrl.trim() || undefined,
       createdAt: initialRecipe?.createdAt || new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
@@ -546,13 +556,100 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({
         </div>
       </div>
 
-      {/* 3. Section Bahan Utama */}
+      {/* 3. Section Video Tutorial (YouTube, TikTok, Instagram) */}
+      <div className="bg-white p-4 sm:p-7 rounded-3xl border border-sage-200 shadow-sage-sm space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-sage-100 pb-3">
+          <div>
+            <h3 className="font-bold text-sage-900 text-base sm:text-lg flex items-center gap-2">
+              <span className="w-6 h-6 rounded-full bg-sage-200 text-sage-800 text-xs flex items-center justify-center font-bold">
+                3
+              </span>
+              <span>Link Video Tutorial (Opsional)</span>
+            </h3>
+            <p className="text-xs text-sage-600 mt-0.5">
+              Tautkan video memasak dari YouTube, TikTok, atau Instagram agar bisa diputar langsung di detail resep.
+            </p>
+          </div>
+          {parsedVideo && (
+            <span
+              className={`self-start sm:self-auto text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1.5 shadow-2xs ${
+                parsedVideo.platform === 'youtube'
+                  ? 'bg-red-100 text-red-800 border border-red-200'
+                  : parsedVideo.platform === 'tiktok'
+                  ? 'bg-slate-900 text-white'
+                  : parsedVideo.platform === 'instagram'
+                  ? 'bg-pink-100 text-pink-800 border border-pink-200'
+                  : 'bg-sage-100 text-sage-800 border border-sage-200'
+              }`}
+            >
+              <Play className="w-3 h-3 fill-current" />
+              <span>{parsedVideo.label} Terdeteksi</span>
+            </span>
+          )}
+        </div>
+
+        <div className="space-y-3">
+          <div className="relative">
+            <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-sage-400">
+              <Video className="w-5 h-5" />
+            </div>
+            <input
+              type="url"
+              placeholder="Contoh: https://youtube.com/watch?v=... atau https://tiktok.com/@... atau https://instagram.com/reel/..."
+              value={videoUrl}
+              onChange={(e) => setVideoUrl(e.target.value)}
+              className="w-full pl-11 pr-10 py-3 rounded-xl border border-sage-300 focus:border-sage-500 focus:ring-2 focus:ring-sage-200 outline-none text-sage-900 text-sm transition-all"
+            />
+            {videoUrl && (
+              <button
+                type="button"
+                onClick={() => setVideoUrl('')}
+                className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-sage-400 hover:text-red-500 transition-colors"
+                title="Hapus tautan video"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            )}
+          </div>
+
+          {/* Live Preview Embed for YouTube */}
+          {parsedVideo?.embedUrl && (
+            <div className="mt-3 p-3.5 bg-sage-50 rounded-2xl border border-sage-200 space-y-2">
+              <span className="text-xs font-bold text-sage-700 flex items-center gap-1.5">
+                <Youtube className="w-4 h-4 text-red-600" />
+                Preview Pemutar Video YouTube:
+              </span>
+              <div className="relative aspect-video w-full max-w-md mx-auto rounded-xl overflow-hidden border border-sage-300 bg-black shadow-sm">
+                <iframe
+                  src={parsedVideo.embedUrl}
+                  title="Preview Video Tutorial"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                  className="w-full h-full border-0"
+                />
+              </div>
+            </div>
+          )}
+
+          {/* Hint for TikTok / Instagram */}
+          {parsedVideo && (parsedVideo.platform === 'tiktok' || parsedVideo.platform === 'instagram') && (
+            <div className="p-3 bg-sage-50 rounded-xl border border-sage-200 text-xs text-sage-700 flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-sage-500 shrink-0"></span>
+              <span>
+                Link {parsedVideo.label} valid! Tombol tonton langsung akan otomatis muncul pada halaman detail menu.
+              </span>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* 4. Section Bahan Utama */}
       <div className="bg-white p-4 sm:p-7 rounded-3xl border border-sage-200 shadow-sage-sm space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 border-b border-sage-100 pb-3">
           <div className="min-w-0">
             <h3 className="font-bold text-sage-900 text-base sm:text-lg flex items-center gap-2">
               <span className="w-6 h-6 rounded-full bg-sage-200 text-sage-800 text-xs flex items-center justify-center font-bold shrink-0">
-                3
+                4
               </span>
               <span>Daftar Bahan Utama</span>
             </h3>
@@ -611,13 +708,13 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({
         </div>
       </div>
 
-      {/* 4. Section Bumbu (Lengkap dengan Gambar Bumbu) */}
+      {/* 5. Section Bumbu (Lengkap dengan Gambar Bumbu) */}
       <div className="bg-white p-4 sm:p-7 rounded-3xl border border-sage-200 shadow-sage-sm space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 border-b border-sage-100 pb-3">
           <div className="min-w-0">
             <h3 className="font-bold text-sage-900 text-base sm:text-lg flex items-center gap-2">
               <span className="w-6 h-6 rounded-full bg-sage-200 text-sage-800 text-xs flex items-center justify-center font-bold shrink-0">
-                4
+                5
               </span>
               <span>Daftar Bumbu & Rempah (Ada Foto Bumbu)</span>
             </h3>
@@ -713,13 +810,13 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({
         </div>
       </div>
 
-      {/* 5. Langkah Memasak */}
+      {/* 6. Langkah Memasak */}
       <div className="bg-white p-4 sm:p-7 rounded-3xl border border-sage-200 shadow-sage-sm space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 border-b border-sage-100 pb-3">
           <div className="min-w-0">
             <h3 className="font-bold text-sage-900 text-base sm:text-lg flex items-center gap-2">
               <span className="w-6 h-6 rounded-full bg-sage-200 text-sage-800 text-xs flex items-center justify-center font-bold shrink-0">
-                5
+                6
               </span>
               <span>Langkah-Langkah Memasak</span>
             </h3>
