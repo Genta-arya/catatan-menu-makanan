@@ -2,6 +2,7 @@ import React from 'react';
 import { Clock, Users, Utensils, Sparkles, Image as ImageIcon, Play } from 'lucide-react';
 import type { Recipe } from '../../types/recipe';
 import { MealBadge } from './MealBadge';
+import { parseMinutes } from '../../utils/recipeHelper';
 
 interface RecipeCardProps {
   recipe: Recipe;
@@ -85,12 +86,15 @@ export const RecipeCard: React.FC<RecipeCardProps> = ({ recipe, onClick }) => {
             </span>
           </div>
 
-          {(recipe.cookTime || recipe.prepTime) && (
-            <span className="flex items-center gap-1 text-sage-500">
-              <Clock className="w-3.5 h-3.5" />
-              <span>{(recipe.prepTime || 0) + (recipe.cookTime || 0)}m</span>
-            </span>
-          )}
+          {(() => {
+            const totalMins = parseMinutes(recipe.prepTime) + parseMinutes(recipe.cookTime);
+            return totalMins > 0 ? (
+              <span className="flex items-center gap-1 text-sage-500 font-medium">
+                <Clock className="w-3.5 h-3.5" />
+                <span>{totalMins}m</span>
+              </span>
+            ) : null;
+          })()}
         </div>
       </div>
     </div>

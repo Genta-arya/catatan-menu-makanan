@@ -25,6 +25,7 @@ import { generateRecipeWithAI, parseRawRecipeWithAI } from '../../services/aiSer
 import { toast } from '../../utils/toast';
 import { processAndUploadImage } from '../../utils/imageUpload';
 import { parseVideoUrl } from '../../utils/videoHelper';
+import { parseMinutes, CATEGORY_PRESETS } from '../../utils/recipeHelper';
 
 interface RecipeFormProps {
   initialRecipe?: Partial<Recipe>;
@@ -63,9 +64,9 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({
     initialRecipe?.steps || ['']
   );
 
-  const [prepTime, setPrepTime] = useState<number>(initialRecipe?.prepTime || 15);
-  const [cookTime, setCookTime] = useState<number>(initialRecipe?.cookTime || 20);
-  const [servings, setServings] = useState<number>(initialRecipe?.servings || 4);
+  const [prepTime, setPrepTime] = useState<number>(parseMinutes(initialRecipe?.prepTime) || 15);
+  const [cookTime, setCookTime] = useState<number>(parseMinutes(initialRecipe?.cookTime) || 20);
+  const [servings, setServings] = useState<number>(Number(initialRecipe?.servings) || 4);
   const [notes, setNotes] = useState(initialRecipe?.notes || '');
   const [videoUrl, setVideoUrl] = useState(initialRecipe?.videoUrl || '');
 
@@ -206,9 +207,9 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({
         }))
       );
       setSteps(generated.steps.length > 0 ? generated.steps : ['']);
-      setPrepTime(generated.prepTime || 15);
-      setCookTime(generated.cookTime || 20);
-      setServings(generated.servings || 4);
+      setPrepTime(parseMinutes(generated.prepTime) || 15);
+      setCookTime(parseMinutes(generated.cookTime) || 20);
+      setServings(Number(generated.servings) || 4);
       if (generated.notes) setNotes(generated.notes);
     } catch (err: any) {
       setAiError(err.message || 'Gagal generate dengan AI. Silakan coba sesaat lagi.');
@@ -245,9 +246,9 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({
         }))
       );
       setSteps(parsed.steps.length > 0 ? parsed.steps : ['']);
-      setPrepTime(parsed.prepTime || 15);
-      setCookTime(parsed.cookTime || 20);
-      setServings(parsed.servings || 4);
+      setPrepTime(parseMinutes(parsed.prepTime) || 15);
+      setCookTime(parseMinutes(parsed.cookTime) || 20);
+      setServings(Number(parsed.servings) || 4);
       if (parsed.notes) setNotes(parsed.notes);
       if (parsed.videoUrl) setVideoUrl(parsed.videoUrl);
       setShowRawPasteModal(false);
@@ -281,9 +282,9 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({
       ingredients: cleanIngredients,
       seasonings: cleanSeasonings,
       steps: cleanSteps,
-      prepTime,
-      cookTime,
-      servings,
+      prepTime: parseMinutes(prepTime),
+      cookTime: parseMinutes(cookTime),
+      servings: Number(servings) || 2,
       notes: notes.trim(),
       videoUrl: videoUrl.trim() || undefined,
       createdAt: initialRecipe?.createdAt || new Date().toISOString(),
@@ -413,23 +414,49 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-xs font-semibold text-sage-700 uppercase tracking-wider mb-1.5">
-              Kategori Olahan
+        {/* Jenis / Kategori Masakan (Badge) */}
+        <div className="space-y-2">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+            <label className="block text-xs font-semibold text-sage-700 uppercase tracking-wider">
+              Jenis / Kategori Masakan (Badge) <span className="text-red-500">*</span>
             </label>
-            <input
-              type="text"
-              placeholder="Misal: Tumisan, Sup, Gorengan, Sayuran"
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
-              className="w-full px-4 py-2.5 rounded-xl border border-sage-300 focus:border-sage-500 focus:ring-2 focus:ring-sage-200 outline-none text-sage-900 text-sm transition-all"
-            />
+            <span className="text-[11px] text-sage-500">Klik badge cepat atau ketik jenis kustom</span>
           </div>
 
+          {/* Quick Preset Badges */}
+          <div className="flex flex-wrap gap-1.5 p-1 bg-sage-50/50 rounded-2xl border border-sage-200/60">
+            {CATEGORY_PRESETS.map((cat) => (
+              <button
+                key={cat}
+                type="button"
+                onClick={() => setCategory(cat)}
+                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1 cursor-pointer ${
+                  category === cat
+                    ? 'bg-sage-600 text-white shadow-sm ring-2 ring-sage-300'
+                    : 'bg-white hover:bg-sage-100 text-sage-800 border border-sage-200'
+                }`}
+              >
+                <span>{cat}</span>
+                {category === cat && <Check className="w-3 h-3 ml-0.5" />}
+              </button>
+            ))}
+          </div>
+
+          <input
+            type="text"
+            required
+            placeholder="Atau ketik jenis olahan kustom (misal: Olahan Mie, Gulai, dsb)"
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+            className="w-full px-4 py-2.5 rounded-xl border border-sage-300 focus:border-sage-500 focus:ring-2 focus:ring-sage-200 outline-none text-sage-900 text-sm font-medium transition-all"
+          />
+        </div>
+
+        {/* Porsi & Waktu Masak (Persiapan + Memasak) */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
           <div>
             <label className="block text-xs font-semibold text-sage-700 uppercase tracking-wider mb-1.5">
-              Porsi
+              Porsi Sajian
             </label>
             <div className="relative">
               <input
@@ -438,18 +465,15 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({
                 max="50"
                 value={servings}
                 onChange={(e) => setServings(Number(e.target.value) || 1)}
-                className="w-full pl-4 pr-14 py-2.5 rounded-xl border border-sage-300 focus:border-sage-500 focus:ring-2 focus:ring-sage-200 outline-none text-sage-900 text-sm transition-all"
+                className="w-full pl-4 pr-14 py-2.5 rounded-xl border border-sage-300 focus:border-sage-500 focus:ring-2 focus:ring-sage-200 outline-none text-sage-900 text-sm transition-all font-medium"
               />
               <span className="absolute right-4 top-2.5 text-xs text-sage-500 font-medium">Orang</span>
             </div>
           </div>
-        </div>
 
-        {/* Waktu Masak */}
-        <div className="grid grid-cols-2 gap-3 sm:gap-4">
           <div>
             <label className="block text-xs font-semibold text-sage-700 uppercase tracking-wider mb-1.5">
-              Persiapan
+              Waktu Persiapan
             </label>
             <div className="relative">
               <input
@@ -457,14 +481,15 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({
                 min="0"
                 value={prepTime}
                 onChange={(e) => setPrepTime(Number(e.target.value) || 0)}
-                className="w-full pl-3 sm:pl-4 pr-12 py-2.5 rounded-xl border border-sage-300 focus:border-sage-500 focus:ring-2 focus:ring-sage-200 outline-none text-sage-900 text-sm transition-all"
+                className="w-full pl-3 sm:pl-4 pr-12 py-2.5 rounded-xl border border-sage-300 focus:border-sage-500 focus:ring-2 focus:ring-sage-200 outline-none text-sage-900 text-sm transition-all font-medium"
               />
               <span className="absolute right-3 sm:right-4 top-2.5 text-xs text-sage-500 font-medium">menit</span>
             </div>
           </div>
+
           <div>
             <label className="block text-xs font-semibold text-sage-700 uppercase tracking-wider mb-1.5">
-              Memasak
+              Waktu Memasak
             </label>
             <div className="relative">
               <input
@@ -472,7 +497,7 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({
                 min="0"
                 value={cookTime}
                 onChange={(e) => setCookTime(Number(e.target.value) || 0)}
-                className="w-full pl-3 sm:pl-4 pr-12 py-2.5 rounded-xl border border-sage-300 focus:border-sage-500 focus:ring-2 focus:ring-sage-200 outline-none text-sage-900 text-sm transition-all"
+                className="w-full pl-3 sm:pl-4 pr-12 py-2.5 rounded-xl border border-sage-300 focus:border-sage-500 focus:ring-2 focus:ring-sage-200 outline-none text-sage-900 text-sm transition-all font-medium"
               />
               <span className="absolute right-3 sm:right-4 top-2.5 text-xs text-sage-500 font-medium">menit</span>
             </div>

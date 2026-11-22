@@ -15,6 +15,7 @@ import {
 import type { Recipe, MealPlanDay } from '../../types/recipe';
 import { getRecipes, getMealPlans, getShoppingList } from '../../services/storage';
 import { MealBadge } from '../recipes/MealBadge';
+import { parseMinutes } from '../../utils/recipeHelper';
 
 export const HomeDashboard: React.FC = () => {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
@@ -297,7 +298,7 @@ export const HomeDashboard: React.FC = () => {
                 <span>•</span>
                 <span>{recipes[0].seasonings.length} Bumbu</span>
                 <span>•</span>
-                <span>{(recipes[0].prepTime || 0) + (recipes[0].cookTime || 0)} Menit</span>
+                <span>{parseMinutes(recipes[0].prepTime) + parseMinutes(recipes[0].cookTime)} Menit</span>
               </div>
               <div className="pt-1">
                 <a

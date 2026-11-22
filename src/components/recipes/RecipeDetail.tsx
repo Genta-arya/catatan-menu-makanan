@@ -18,12 +18,16 @@ import {
   Video,
   Youtube,
   ExternalLink,
+  Check,
+  X,
+  Tag,
 } from 'lucide-react';
 import type { Recipe } from '../../types/recipe';
 import { MealBadge } from './MealBadge';
-import { saveShoppingList, getShoppingList } from '../../services/storage';
+import { saveShoppingList, getShoppingList, saveRecipe } from '../../services/storage';
 import { toast } from '../../utils/toast';
 import { parseVideoUrl } from '../../utils/videoHelper';
+import { parseMinutes, CATEGORY_PRESETS } from '../../utils/recipeHelper';
 
 interface RecipeDetailProps {
   recipe: Recipe;
@@ -42,6 +46,15 @@ export const RecipeDetail: React.FC<RecipeDetailProps> = ({
   const [checkedIngredients, setCheckedIngredients] = useState<Record<string, boolean>>({});
   const [checkedSteps, setCheckedSteps] = useState<Record<number, boolean>>({});
   const [shoppingNotice, setShoppingNotice] = useState<string | null>(null);
+
+  const [currentCategory, setCurrentCategory] = useState(recipe.category || 'Tumisan');
+  const [showCategoryModal, setShowCategoryModal] = useState(false);
+  const [tempCategory, setTempCategory] = useState(recipe.category || 'Tumisan');
+  const [isSavingCategory, setIsSavingCategory] = useState(false);
+
+  const prepMinutes = parseMinutes(recipe.prepTime);
+  const cookMinutes = parseMinutes(recipe.cookTime);
+  const totalMinutes = prepMinutes + cookMinutes;
 
   const images =
     recipe.images && recipe.images.length > 0
@@ -173,9 +186,19 @@ export const RecipeDetail: React.FC<RecipeDetailProps> = ({
             ))}
           </div>
 
-          <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-md text-sage-900 text-xs font-bold px-3 py-1 rounded-full shadow-sm">
-            {recipe.category}
-          </div>
+          <button
+            type="button"
+            onClick={() => {
+              setTempCategory(currentCategory);
+              setShowCategoryModal(true);
+            }}
+            className="absolute top-4 right-4 bg-white/95 hover:bg-white text-sage-900 text-xs font-bold px-3 py-1.5 rounded-full shadow-md border border-sage-200 flex items-center gap-1.5 transition-all hover:scale-105 active:scale-95 group backdrop-blur-md cursor-pointer"
+            title="Klik untuk mengubah jenis / kategori masakan"
+          >
+            <Tag className="w-3 h-3 text-sage-500" />
+            <span>{currentCategory}</span>
+            <Edit3 className="w-3 h-3 text-sage-400 group-hover:text-sage-700 transition-colors" />
+          </button>
         </div>
 
         {/* Thumbnail Selector (if multiple images) */}
@@ -216,8 +239,15 @@ export const RecipeDetail: React.FC<RecipeDetailProps> = ({
               </span>
               <span className="font-bold text-sage-900 text-base sm:text-lg flex items-center justify-center gap-1 mt-0.5">
                 <Clock className="w-4 h-4 text-sage-500" />
-                {(recipe.prepTime || 0) + (recipe.cookTime || 0)} Menit
+                {totalMinutes > 0 ? `${totalMinutes} Menit` : '15 Menit'}
               </span>
+              {(prepMinutes > 0 || cookMinutes > 0) && (
+                <span className="text-[10px] text-sage-500 block mt-0.5 font-medium">
+                  {prepMinutes > 0 ? `Siap ${prepMinutes}m` : ''}
+                  {prepMinutes > 0 && cookMinutes > 0 ? ' • ' : ''}
+                  {cookMinutes > 0 ? `Masak ${cookMinutes}m` : ''}
+                </span>
+              )}
             </div>
 
             <div className="bg-sage-50 p-3 rounded-2xl border border-sage-200 text-center">
@@ -539,6 +569,101 @@ export const RecipeDetail: React.FC<RecipeDetailProps> = ({
           <p className="text-sage-700 text-sm leading-relaxed">
             {recipe.notes}
           </p>
+        </div>
+      )}
+
+      {/* Quick Category Modal */}
+      {showCategoryModal && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 animate-fadeIn">
+          <div className="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-sage-200 space-y-4">
+            <div className="flex items-center justify-between border-b border-sage-100 pb-3">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-xl bg-sage-100 text-sage-800 flex items-center justify-center font-bold">
+                  <Tag className="w-4 h-4 text-sage-700" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-sage-900 text-base">Ubah Jenis Masakan</h3>
+                  <p className="text-xs text-sage-500">Pilih kategori badge untuk menu ini</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowCategoryModal(false)}
+                className="text-sage-400 hover:text-sage-700 p-1 rounded-lg"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="space-y-3">
+              <label className="block text-xs font-semibold text-sage-700 uppercase tracking-wider">
+                Pilihan Jenis Masakan Populer
+              </label>
+              <div className="flex flex-wrap gap-1.5 max-h-48 overflow-y-auto p-1">
+                {CATEGORY_PRESETS.map((cat) => (
+                  <button
+                    key={cat}
+                    type="button"
+                    onClick={() => setTempCategory(cat)}
+                    className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1 ${
+                      tempCategory === cat
+                        ? 'bg-sage-600 text-white shadow-sm ring-2 ring-sage-300'
+                        : 'bg-sage-100 hover:bg-sage-200 text-sage-800'
+                    }`}
+                  >
+                    <span>{cat}</span>
+                    {tempCategory === cat && <Check className="w-3 h-3 ml-0.5" />}
+                  </button>
+                ))}
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-sage-700 uppercase tracking-wider mb-1.5">
+                  Atau Ketik Jenis Kustom
+                </label>
+                <input
+                  type="text"
+                  placeholder="Misal: Olahan Tahu, Gulai, dsb."
+                  value={tempCategory}
+                  onChange={(e) => setTempCategory(e.target.value)}
+                  className="w-full px-4 py-2.5 rounded-xl border border-sage-300 focus:border-sage-500 focus:ring-2 focus:ring-sage-200 outline-none text-sage-900 text-sm font-medium transition-all"
+                />
+              </div>
+            </div>
+
+            <div className="flex items-center justify-end gap-2 pt-3 border-t border-sage-100">
+              <button
+                type="button"
+                onClick={() => setShowCategoryModal(false)}
+                className="px-4 py-2 rounded-xl text-sage-700 hover:bg-sage-100 text-xs sm:text-sm font-semibold transition-colors"
+              >
+                Batal
+              </button>
+              <button
+                type="button"
+                disabled={!tempCategory.trim() || isSavingCategory}
+                onClick={async () => {
+                  setIsSavingCategory(true);
+                  try {
+                    const cleanCat = tempCategory.trim();
+                    await saveRecipe({ ...recipe, category: cleanCat });
+                    setCurrentCategory(cleanCat);
+                    recipe.category = cleanCat;
+                    setShowCategoryModal(false);
+                    toast.success(`Jenis masakan berhasil diubah menjadi: ${cleanCat}`);
+                  } catch (err: any) {
+                    toast.error('Gagal menyimpan jenis masakan.');
+                  } finally {
+                    setIsSavingCategory(false);
+                  }
+                }}
+                className="px-5 py-2.5 rounded-xl bg-sage-600 hover:bg-sage-700 text-white text-xs sm:text-sm font-bold flex items-center gap-1.5 shadow-sm transition-colors disabled:opacity-50"
+              >
+                <Check className="w-4 h-4" />
+                <span>{isSavingCategory ? 'Menyimpan...' : 'Simpan Jenis Masakan'}</span>
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

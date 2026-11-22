@@ -22,6 +22,7 @@ import {
   importAllData,
 } from '../../services/storage';
 import { toast } from '../../utils/toast';
+import { parseMinutes } from '../../utils/recipeHelper';
 
 export const RecipeListManager: React.FC = () => {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
@@ -86,8 +87,8 @@ export const RecipeListManager: React.FC = () => {
       .sort((a, b) => {
         if (sortBy === 'az') return a.title.localeCompare(b.title);
         if (sortBy === 'fastest') {
-          const timeA = (a.prepTime || 0) + (a.cookTime || 0);
-          const timeB = (b.prepTime || 0) + (b.cookTime || 0);
+          const timeA = parseMinutes(a.prepTime) + parseMinutes(a.cookTime);
+          const timeB = parseMinutes(b.prepTime) + parseMinutes(b.cookTime);
           return timeA - timeB;
         }
         // Newest

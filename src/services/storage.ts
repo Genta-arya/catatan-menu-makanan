@@ -1,5 +1,6 @@
 import { get, set } from 'idb-keyval';
 import type { Recipe, MealPlanDay, ShoppingItem, UserSettings } from '../types/recipe';
+import { parseMinutes } from '../utils/recipeHelper';
 
 const RECIPES_KEY = 'menu_makanan_recipes';
 const MEAL_PLANS_KEY = 'menu_makanan_mealplans';
@@ -192,6 +193,17 @@ export async function checkVpsDbStatus(): Promise<{ connected: boolean; message:
   }
 }
 
+// Sanitize recipe data so numbers and categories are clean and predictable
+export function sanitizeRecipe(r: any): Recipe {
+  return {
+    ...r,
+    prepTime: parseMinutes(r?.prepTime),
+    cookTime: parseMinutes(r?.cookTime),
+    servings: Number(r?.servings) || 2,
+    category: r?.category?.trim() || 'Lauk Utama',
+  };
+}
+
 // Recipes CRUD with VPS MySQL sync
 export async function getRecipes(): Promise<Recipe[]> {
   // 1. Try fetching live from VPS MySQL first
@@ -204,9 +216,10 @@ export async function getRecipes(): Promise<Recipe[]> {
       if (res.ok) {
         const json = await res.json();
         if (json.success && Array.isArray(json.data) && json.data.length > 0) {
+          const sanitized = json.data.map(sanitizeRecipe);
           // Cache to IDB
-          await setStorageItem(RECIPES_KEY, json.data);
-          return json.data;
+          await setStorageItem(RECIPES_KEY, sanitized);
+          return sanitized;
         }
       }
     }
@@ -217,10 +230,11 @@ export async function getRecipes(): Promise<Recipe[]> {
   // 2. Fall back to local IndexedDB
   const recipes = await getStorageItem<Recipe[]>(RECIPES_KEY, []);
   if (recipes.length === 0) {
-    await setStorageItem(RECIPES_KEY, INITIAL_RECIPES);
-    return INITIAL_RECIPES;
+    const defaultSanitized = INITIAL_RECIPES.map(sanitizeRecipe);
+    await setStorageItem(RECIPES_KEY, defaultSanitized);
+    return defaultSanitized;
   }
-  return recipes;
+  return recipes.map(sanitizeRecipe);
 }
 
 export async function getRecipeById(id: string): Promise<Recipe | undefined> {
@@ -229,18 +243,19 @@ export async function getRecipeById(id: string): Promise<Recipe | undefined> {
 }
 
 export async function saveRecipe(recipe: Recipe): Promise<void> {
+  const cleanRecipe = sanitizeRecipe(recipe);
   const recipes = await getRecipes();
-  const index = recipes.findIndex((r) => r.id === recipe.id);
+  const index = recipes.findIndex((r) => r.id === cleanRecipe.id);
   const now = new Date().toISOString();
 
   let updatedRecipe: Recipe;
   if (index >= 0) {
-    updatedRecipe = { ...recipe, updatedAt: now };
+    updatedRecipe = { ...cleanRecipe, updatedAt: now };
     recipes[index] = updatedRecipe;
   } else {
     updatedRecipe = {
-      ...recipe,
-      createdAt: recipe.createdAt || now,
+      ...cleanRecipe,
+      createdAt: cleanRecipe.createdAt || now,
       updatedAt: now,
     };
     recipes.unshift(updatedRecipe);

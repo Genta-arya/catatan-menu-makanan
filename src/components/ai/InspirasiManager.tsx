@@ -16,6 +16,7 @@ import { getRecipes, saveRecipe } from '../../services/storage';
 import { generateRecipeWithAI } from '../../services/aiService';
 import { MealBadge } from '../recipes/MealBadge';
 import { toast } from '../../utils/toast';
+import { parseMinutes } from '../../utils/recipeHelper';
 
 export const InspirasiManager: React.FC = () => {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
@@ -207,7 +208,7 @@ export const InspirasiManager: React.FC = () => {
               <div className="flex items-center justify-center md:justify-start gap-4 text-xs font-semibold text-sage-700 pt-1">
                 <span className="flex items-center gap-1">
                   <Clock className="w-3.5 h-3.5 text-sage-500" />
-                  {(randomRecipe.prepTime || 10) + (randomRecipe.cookTime || 20)} Menit
+                  {(parseMinutes(randomRecipe.prepTime) || 10) + (parseMinutes(randomRecipe.cookTime) || 20)} Menit
                 </span>
                 <span className="flex items-center gap-1">
                   <Utensils className="w-3.5 h-3.5 text-sage-500" />
