@@ -407,6 +407,9 @@ export const ShoppingManager: React.FC = () => {
                         <ChefHat className="w-4 h-4 text-sage-700" />
                       </div>
                       <div className="min-w-0">
+                        <span className="text-[10px] uppercase font-bold tracking-wider text-sage-500 block">
+                          Bahan Belanja untuk Menu
+                        </span>
                         <h3 className="font-extrabold text-sage-950 text-base sm:text-lg truncate">
                           {recipeTitle}
                         </h3>
