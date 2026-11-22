@@ -58,7 +58,7 @@ export const HomeDashboard: React.FC = () => {
             </div>
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/20 backdrop-blur-md text-xs font-semibold text-emerald-100 border border-emerald-400/30">
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-              <span>Database: MySQL VPS (Active)</span>
+              <span>Database: server.hostdata.id (Active)</span>
             </div>
           </div>
 

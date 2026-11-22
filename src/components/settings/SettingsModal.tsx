@@ -119,8 +119,8 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
               <Database className="w-4 h-4" />
             </div>
             <div>
-              <span className="text-xs font-bold text-sage-900 block">Database Server VPS</span>
-              <span className="text-[11px] text-sage-600 block">{dbStatus.message} (51.79.152.173)</span>
+              <span className="text-xs font-bold text-sage-900 block">Database MySQL Server</span>
+              <span className="text-[11px] text-sage-600 block">{dbStatus.message}</span>
             </div>
           </div>
           <button

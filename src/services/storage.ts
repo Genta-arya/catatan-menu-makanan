@@ -172,7 +172,7 @@ async function setStorageItem<T>(key: string, value: T): Promise<void> {
   }
 }
 
-// Check VPS MySQL database health
+// Check database health
 export async function checkVpsDbStatus(): Promise<{ connected: boolean; message: string }> {
   try {
     const controller = new AbortController();
@@ -181,7 +181,7 @@ export async function checkVpsDbStatus(): Promise<{ connected: boolean; message:
     clearTimeout(timeout);
     if (res.ok) {
       const data = await res.json();
-      return { connected: true, message: `MySQL VPS Aktif (${data.database})` };
+      return { connected: true, message: `Database Aktif (${data.dbName || 'mgentaar_makanan'} @ server.hostdata.id)` };
     }
     return { connected: false, message: `Server error (${res.status})` };
   } catch (err: any) {
@@ -381,7 +381,7 @@ export async function exportAllData(): Promise<string> {
 
   const payload = {
     appName: 'Catatan Menu Makanan',
-    database: 'MySQL 51.79.152.173 (db_catatan_menu)',
+    database: 'MariaDB server.hostdata.id (mgentaar_makanan)',
     exportedAt: new Date().toISOString(),
     version: '2.0',
     data: { recipes, mealPlans, shopping, aiSettings },
