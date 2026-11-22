@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import {
   Calendar as CalendarIcon,
   Plus,
@@ -37,6 +38,20 @@ export const WeeklyPlanner: React.FC = () => {
   } | null>(null);
 
   const [notice, setNotice] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!activeSlot) return;
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setActiveSlot(null);
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = originalOverflow;
+    };
+  }, [activeSlot]);
 
   useEffect(() => {
     loadData();
@@ -323,60 +338,74 @@ export const WeeklyPlanner: React.FC = () => {
       </div>
 
       {/* Recipe Selection Modal */}
-      {activeSlot && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-sage-300 space-y-4">
-            <div className="flex items-center justify-between border-b border-sage-100 pb-3">
-              <div>
-                <h3 className="font-extrabold text-sage-950 text-base">
-                  Pilih Menu Masakan
-                </h3>
-                <p className="text-xs text-sage-600">
-                  Untuk waktu {activeSlot.slot.toUpperCase()} pada tanggal {activeSlot.date}
-                </p>
+      {activeSlot &&
+        createPortal(
+          <div
+            onClick={() => setActiveSlot(null)}
+            className="fixed inset-0 z-[99999] w-screen h-screen h-[100dvh] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 animate-fadeIn select-none overflow-y-auto"
+            style={{
+              paddingTop: 'max(env(safe-area-inset-top, 16px), 16px)',
+              paddingBottom: 'max(env(safe-area-inset-bottom, 16px), 16px)',
+            }}
+          >
+            <div
+              onClick={(e) => e.stopPropagation()}
+              className="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-sage-300 space-y-4 animate-scaleUp my-auto"
+            >
+              <div className="flex items-center justify-between border-b border-sage-100 pb-3">
+                <div>
+                  <h3 className="font-extrabold text-sage-950 text-base">
+                    Pilih Menu Masakan
+                  </h3>
+                  <p className="text-xs text-sage-600">
+                    Untuk waktu {activeSlot.slot.toUpperCase()} pada tanggal {activeSlot.date}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setActiveSlot(null)}
+                  className="w-8 h-8 rounded-full bg-sage-100 hover:bg-sage-200 text-sage-600 flex items-center justify-center transition-colors cursor-pointer"
+                  title="Tutup"
+                >
+                  <X className="w-4 h-4" />
+                </button>
               </div>
-              <button
-                onClick={() => setActiveSlot(null)}
-                className="text-sage-400 hover:text-sage-700"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
 
-            <div className="max-h-80 overflow-y-auto space-y-2 pr-1">
-              {recipes.map((r) => {
-                const isMatch = r.mealTypes.includes(activeSlot.slot);
-                return (
-                  <div
-                    key={r.id}
-                    onClick={() => handleAssignRecipe(r.id)}
-                    className="p-3 rounded-2xl border border-sage-200 hover:border-sage-400 hover:bg-sage-50 cursor-pointer flex items-center gap-3 transition-all"
-                  >
-                    <img
-                      src={r.images?.[0] || 'https://images.unsplash.com/photo-1498837167922-ddd27525d352?w=400'}
-                      alt={r.title}
-                      className="w-12 h-12 rounded-xl object-cover shrink-0"
-                    />
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2">
-                        <h4 className="font-bold text-sm text-sage-900 truncate">{r.title}</h4>
-                        {isMatch && (
-                          <span className="text-[10px] font-bold px-1.5 py-0.2 rounded-full bg-sage-200 text-sage-800 shrink-0">
-                            Cocok
-                          </span>
-                        )}
+              <div className="max-h-80 overflow-y-auto space-y-2 pr-1">
+                {recipes.map((r) => {
+                  const isMatch = r.mealTypes.includes(activeSlot.slot);
+                  return (
+                    <div
+                      key={r.id}
+                      onClick={() => handleAssignRecipe(r.id)}
+                      className="p-3 rounded-2xl border border-sage-200 hover:border-sage-400 hover:bg-sage-50 cursor-pointer flex items-center gap-3 transition-all"
+                    >
+                      <img
+                        src={r.images?.[0] || 'https://images.unsplash.com/photo-1498837167922-ddd27525d352?w=400'}
+                        alt={r.title}
+                        className="w-12 h-12 rounded-xl object-cover shrink-0"
+                      />
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2">
+                          <h4 className="font-bold text-sm text-sage-900 truncate">{r.title}</h4>
+                          {isMatch && (
+                            <span className="text-[10px] font-bold px-1.5 py-0.2 rounded-full bg-sage-200 text-sage-800 shrink-0">
+                              Cocok
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-xs text-sage-500 mt-0.5">
+                          {r.category} • {r.ingredients.length} bahan
+                        </p>
                       </div>
-                      <p className="text-xs text-sage-500 mt-0.5">
-                        {r.category} • {r.ingredients.length} bahan
-                      </p>
                     </div>
-                  </div>
-                );
-              })}
+                  );
+                })}
+              </div>
             </div>
-          </div>
-        </div>
-      )}
+          </div>,
+          document.body
+        )}
     </div>
   );
 };

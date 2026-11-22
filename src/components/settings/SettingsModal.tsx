@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import {
   Settings,
   X,
@@ -35,6 +36,28 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
 
   const [dbStatus, setDbStatus] = useState<string>('Memeriksa koneksi...');
   const [importStatus, setImportStatus] = useState<string>('');
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = originalOverflow;
+    };
+  }, [isOpen, onClose]);
 
   useEffect(() => {
     if (isOpen) {
@@ -94,11 +117,21 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
     reader.readAsText(file);
   };
 
-  if (!isOpen) return null;
+  if (!mounted || !isOpen) return null;
 
-  return (
-    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-      <div className="bg-white rounded-3xl max-w-md w-full p-6 sm:p-7 shadow-2xl border border-sage-300 space-y-5 animate-fadeIn">
+  const modalContent = (
+    <div
+      onClick={onClose}
+      className="fixed inset-0 z-[99999] w-screen h-screen h-[100dvh] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 animate-fadeIn select-none overflow-y-auto"
+      style={{
+        paddingTop: 'max(env(safe-area-inset-top, 16px), 16px)',
+        paddingBottom: 'max(env(safe-area-inset-bottom, 16px), 16px)',
+      }}
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="bg-white rounded-3xl max-w-md w-full p-6 sm:p-7 shadow-2xl border border-sage-300 space-y-5 animate-scaleUp my-auto"
+      >
         {/* Header */}
         <div className="flex items-center justify-between border-b border-sage-100 pb-3">
           <div className="flex items-center gap-2.5">
@@ -277,4 +310,6 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
       </div>
     </div>
   );
+
+  return createPortal(modalContent, document.body);
 };

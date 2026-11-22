@@ -23,6 +23,7 @@ import {
 } from '../../services/storage';
 import { toast } from '../../utils/toast';
 import { parseMinutes } from '../../utils/recipeHelper';
+import { ConfirmModal } from '../ui/ConfirmModal';
 
 export const RecipeListManager: React.FC = () => {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
@@ -37,6 +38,7 @@ export const RecipeListManager: React.FC = () => {
   // Navigation / Modal views
   const [viewState, setViewState] = useState<'list' | 'detail' | 'create' | 'edit'>('list');
   const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null);
+  const [deleteRecipeId, setDeleteRecipeId] = useState<string | null>(null);
 
   useEffect(() => {
     loadRecipes();
@@ -111,13 +113,18 @@ export const RecipeListManager: React.FC = () => {
   };
 
   const handleDeleteRecipe = async (id: string) => {
-    if (confirm('Yakin ingin menghapus catatan resep ini?')) {
-      await deleteRecipe(id);
-      await loadRecipes();
-      setViewState('list');
-      setSelectedRecipe(null);
-      toast.info('Catatan resep telah dihapus.');
-    }
+    setDeleteRecipeId(id);
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteRecipeId) return;
+    const id = deleteRecipeId;
+    setDeleteRecipeId(null);
+    await deleteRecipe(id);
+    await loadRecipes();
+    setViewState('list');
+    setSelectedRecipe(null);
+    toast.info('Catatan resep telah dihapus.');
   };
 
   const handleExport = async () => {
@@ -382,6 +389,18 @@ export const RecipeListManager: React.FC = () => {
           </button>
         </div>
       )}
+
+      {/* Confirmation Modal for Recipe Deletion */}
+      <ConfirmModal
+        isOpen={!!deleteRecipeId}
+        title="Hapus Resep Masakan"
+        message="Yakin ingin menghapus catatan resep ini? Tindakan ini tidak dapat dibatalkan."
+        confirmText="Hapus Resep"
+        cancelText="Batal"
+        variant="danger"
+        onConfirm={confirmDelete}
+        onCancel={() => setDeleteRecipeId(null)}
+      />
     </div>
   );
 };

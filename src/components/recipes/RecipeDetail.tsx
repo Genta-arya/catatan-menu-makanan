@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import {
   ArrowLeft,
   Clock,
@@ -55,6 +56,20 @@ export const RecipeDetail: React.FC<RecipeDetailProps> = ({
   const [isSavingCategory, setIsSavingCategory] = useState(false);
   const isInitialPreset = (CATEGORY_PRESETS as readonly string[]).includes(recipe.category || 'Tumisan');
   const [isCustomCategory, setIsCustomCategory] = useState(!isInitialPreset && !!recipe.category);
+
+  useEffect(() => {
+    if (!showCategoryModal) return;
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setShowCategoryModal(false);
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = originalOverflow;
+    };
+  }, [showCategoryModal]);
 
   // Lightbox Modal States
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
@@ -654,130 +669,142 @@ export const RecipeDetail: React.FC<RecipeDetailProps> = ({
       )}
 
       {/* Quick Category Modal */}
-      {showCategoryModal && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 animate-fadeIn">
-          <div className="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-sage-200 space-y-4">
-            <div className="flex items-center justify-between border-b border-sage-100 pb-3">
-              <div className="flex items-center gap-2.5">
-                <div className="w-9 h-9 rounded-xl bg-sage-100 text-sage-800 flex items-center justify-center font-bold">
-                  <Tag className="w-4 h-4 text-sage-700" />
+      {showCategoryModal &&
+        createPortal(
+          <div
+            onClick={() => setShowCategoryModal(false)}
+            className="fixed inset-0 z-[99999] w-screen h-screen h-[100dvh] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 animate-fadeIn select-none overflow-y-auto"
+            style={{
+              paddingTop: 'max(env(safe-area-inset-top, 16px), 16px)',
+              paddingBottom: 'max(env(safe-area-inset-bottom, 16px), 16px)',
+            }}
+          >
+            <div
+              onClick={(e) => e.stopPropagation()}
+              className="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-sage-200 space-y-4 animate-scaleUp my-auto"
+            >
+              <div className="flex items-center justify-between border-b border-sage-100 pb-3">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-9 h-9 rounded-xl bg-sage-100 text-sage-800 flex items-center justify-center font-bold">
+                    <Tag className="w-4 h-4 text-sage-700" />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-sage-900 text-base">Ubah Jenis Masakan</h3>
+                    <p className="text-xs text-sage-500">Pilih kategori badge untuk menu ini</p>
+                  </div>
                 </div>
-                <div>
-                  <h3 className="font-bold text-sage-900 text-base">Ubah Jenis Masakan</h3>
-                  <p className="text-xs text-sage-500">Pilih kategori badge untuk menu ini</p>
+                <button
+                  type="button"
+                  onClick={() => setShowCategoryModal(false)}
+                  className="text-sage-400 hover:text-sage-700 p-1 rounded-lg"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <label className="block text-xs font-semibold text-sage-700 uppercase tracking-wider">
+                    Pilihan Jenis Masakan
+                  </label>
+                  <span className="text-[11px] text-sage-500">Pilih badge atau 'Lainnya'</span>
                 </div>
-              </div>
-              <button
-                type="button"
-                onClick={() => setShowCategoryModal(false)}
-                className="text-sage-400 hover:text-sage-700 p-1 rounded-lg"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
 
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <label className="block text-xs font-semibold text-sage-700 uppercase tracking-wider">
-                  Pilihan Jenis Masakan
-                </label>
-                <span className="text-[11px] text-sage-500">Pilih badge atau 'Lainnya'</span>
-              </div>
+                <div className="flex flex-wrap gap-1.5 max-h-48 overflow-y-auto p-1 bg-sage-50/50 rounded-2xl border border-sage-200/60">
+                  {CATEGORY_PRESETS.map((cat) => (
+                    <button
+                      key={cat}
+                      type="button"
+                      onClick={() => {
+                        setTempCategory(cat);
+                        setIsCustomCategory(false);
+                      }}
+                      className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1 cursor-pointer ${
+                        !isCustomCategory && tempCategory === cat
+                          ? 'bg-sage-600 text-white shadow-sm ring-2 ring-sage-300'
+                          : 'bg-white hover:bg-sage-100 text-sage-800 border border-sage-200'
+                      }`}
+                    >
+                      <span>{cat}</span>
+                      {!isCustomCategory && tempCategory === cat && <Check className="w-3 h-3 ml-0.5" />}
+                    </button>
+                  ))}
 
-              <div className="flex flex-wrap gap-1.5 max-h-48 overflow-y-auto p-1 bg-sage-50/50 rounded-2xl border border-sage-200/60">
-                {CATEGORY_PRESETS.map((cat) => (
+                  {/* Tombol Lainnya */}
                   <button
-                    key={cat}
                     type="button"
                     onClick={() => {
-                      setTempCategory(cat);
-                      setIsCustomCategory(false);
+                      setIsCustomCategory(true);
+                      if ((CATEGORY_PRESETS as readonly string[]).includes(tempCategory)) {
+                        setTempCategory('');
+                      }
                     }}
                     className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1 cursor-pointer ${
-                      !isCustomCategory && tempCategory === cat
+                      isCustomCategory
                         ? 'bg-sage-600 text-white shadow-sm ring-2 ring-sage-300'
                         : 'bg-white hover:bg-sage-100 text-sage-800 border border-sage-200'
                     }`}
                   >
-                    <span>{cat}</span>
-                    {!isCustomCategory && tempCategory === cat && <Check className="w-3 h-3 ml-0.5" />}
+                    <span>✨ Lainnya</span>
+                    {isCustomCategory && <Check className="w-3 h-3 ml-0.5" />}
                   </button>
-                ))}
+                </div>
 
-                {/* Tombol Lainnya */}
-                <button
-                  type="button"
-                  onClick={() => {
-                    setIsCustomCategory(true);
-                    if ((CATEGORY_PRESETS as readonly string[]).includes(tempCategory)) {
-                      setTempCategory('');
-                    }
-                  }}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1 cursor-pointer ${
-                    isCustomCategory
-                      ? 'bg-sage-600 text-white shadow-sm ring-2 ring-sage-300'
-                      : 'bg-white hover:bg-sage-100 text-sage-800 border border-sage-200'
-                  }`}
-                >
-                  <span>✨ Lainnya</span>
-                  {isCustomCategory && <Check className="w-3 h-3 ml-0.5" />}
-                </button>
+                {/* Input Manual hanya tampil jika pilih 'Lainnya' */}
+                {isCustomCategory && (
+                  <div className="pt-1 space-y-1 animate-fadeIn">
+                    <label className="block text-xs font-semibold text-sage-700">
+                      Ketik Jenis Masakan Manual <span className="text-red-500">*</span>:
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      autoFocus
+                      placeholder="Contoh: Gulai, Soto, Pepes, Rendang, Dessert, dll."
+                      value={tempCategory}
+                      onChange={(e) => setTempCategory(e.target.value)}
+                      className="w-full px-4 py-2.5 rounded-xl border-2 border-sage-500 focus:ring-2 focus:ring-sage-200 outline-none text-sage-900 text-sm font-medium transition-all bg-white shadow-xs"
+                    />
+                  </div>
+                )}
               </div>
 
-              {/* Input Manual hanya tampil jika pilih 'Lainnya' */}
-              {isCustomCategory && (
-                <div className="pt-1 space-y-1 animate-fadeIn">
-                  <label className="block text-xs font-semibold text-sage-700">
-                    Ketik Jenis Masakan Manual <span className="text-red-500">*</span>:
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    autoFocus
-                    placeholder="Contoh: Gulai, Soto, Pepes, Rendang, Dessert, dll."
-                    value={tempCategory}
-                    onChange={(e) => setTempCategory(e.target.value)}
-                    className="w-full px-4 py-2.5 rounded-xl border-2 border-sage-500 focus:ring-2 focus:ring-sage-200 outline-none text-sage-900 text-sm font-medium transition-all bg-white shadow-xs"
-                  />
-                </div>
-              )}
+              <div className="flex items-center justify-end gap-2 pt-3 border-t border-sage-100">
+                <button
+                  type="button"
+                  onClick={() => setShowCategoryModal(false)}
+                  className="px-4 py-2 rounded-xl text-sage-700 hover:bg-sage-100 text-xs sm:text-sm font-semibold transition-colors"
+                >
+                  Batal
+                </button>
+                <button
+                  type="button"
+                  disabled={!tempCategory.trim() || isSavingCategory}
+                  onClick={async () => {
+                    setIsSavingCategory(true);
+                    try {
+                      const cleanCat = tempCategory.trim();
+                      await saveRecipe({ ...recipe, category: cleanCat });
+                      setCurrentCategory(cleanCat);
+                      recipe.category = cleanCat;
+                      setShowCategoryModal(false);
+                      toast.success(`Jenis masakan berhasil diubah menjadi: ${cleanCat}`);
+                    } catch (err: any) {
+                      toast.error('Gagal menyimpan jenis masakan.');
+                    } finally {
+                      setIsSavingCategory(false);
+                    }
+                  }}
+                  className="px-5 py-2.5 rounded-xl bg-sage-600 hover:bg-sage-700 text-white text-xs sm:text-sm font-bold flex items-center gap-1.5 shadow-sm transition-colors disabled:opacity-50"
+                >
+                  <Check className="w-4 h-4" />
+                  <span>{isSavingCategory ? 'Menyimpan...' : 'Simpan Jenis Masakan'}</span>
+                </button>
+              </div>
             </div>
-
-            <div className="flex items-center justify-end gap-2 pt-3 border-t border-sage-100">
-              <button
-                type="button"
-                onClick={() => setShowCategoryModal(false)}
-                className="px-4 py-2 rounded-xl text-sage-700 hover:bg-sage-100 text-xs sm:text-sm font-semibold transition-colors"
-              >
-                Batal
-              </button>
-              <button
-                type="button"
-                disabled={!tempCategory.trim() || isSavingCategory}
-                onClick={async () => {
-                  setIsSavingCategory(true);
-                  try {
-                    const cleanCat = tempCategory.trim();
-                    await saveRecipe({ ...recipe, category: cleanCat });
-                    setCurrentCategory(cleanCat);
-                    recipe.category = cleanCat;
-                    setShowCategoryModal(false);
-                    toast.success(`Jenis masakan berhasil diubah menjadi: ${cleanCat}`);
-                  } catch (err: any) {
-                    toast.error('Gagal menyimpan jenis masakan.');
-                  } finally {
-                    setIsSavingCategory(false);
-                  }
-                }}
-                className="px-5 py-2.5 rounded-xl bg-sage-600 hover:bg-sage-700 text-white text-xs sm:text-sm font-bold flex items-center gap-1.5 shadow-sm transition-colors disabled:opacity-50"
-              >
-                <Check className="w-4 h-4" />
-                <span>{isSavingCategory ? 'Menyimpan...' : 'Simpan Jenis Masakan'}</span>
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+          </div>,
+          document.body
+        )}
 
       {/* Lightbox Modal for Main Recipe Images (Preview Fullscreen with Prev/Next) */}
       <ImageLightbox

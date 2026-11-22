@@ -13,6 +13,7 @@ import {
 import type { ShoppingItem } from '../../types/recipe';
 import { getShoppingList, saveShoppingList } from '../../services/storage';
 import { toast } from '../../utils/toast';
+import { ConfirmModal } from '../ui/ConfirmModal';
 
 export const ShoppingManager: React.FC = () => {
   const [items, setItems] = useState<ShoppingItem[]>([]);
@@ -20,6 +21,7 @@ export const ShoppingManager: React.FC = () => {
   const [newItemAmount, setNewItemAmount] = useState('');
   const [newItemCategory, setNewItemCategory] = useState<'bahan' | 'bumbu'>('bahan');
   const [copied, setCopied] = useState(false);
+  const [showClearAllModal, setShowClearAllModal] = useState(false);
 
   useEffect(() => {
     loadShopping();
@@ -70,11 +72,15 @@ export const ShoppingManager: React.FC = () => {
     await saveShoppingList(updated);
   };
 
-  const handleClearAll = async () => {
-    if (confirm('Kosongkan semua daftar belanja?')) {
-      setItems([]);
-      await saveShoppingList([]);
-    }
+  const handleClearAll = () => {
+    setShowClearAllModal(true);
+  };
+
+  const confirmClearAll = async () => {
+    setShowClearAllModal(false);
+    setItems([]);
+    await saveShoppingList([]);
+    toast.info('Seluruh daftar belanja telah dikosongkan.');
   };
 
   // Copy to WhatsApp
@@ -354,6 +360,18 @@ export const ShoppingManager: React.FC = () => {
           </button>
         </div>
       )}
+
+      {/* Confirmation Modal */}
+      <ConfirmModal
+        isOpen={showClearAllModal}
+        title="Kosongkan Daftar Belanja"
+        message="Yakin ingin mengosongkan seluruh daftar belanja? Semua item bahan dan bumbu akan dihapus."
+        confirmText="Kosongkan Semua"
+        cancelText="Batal"
+        variant="danger"
+        onConfirm={confirmClearAll}
+        onCancel={() => setShowClearAllModal(false)}
+      />
     </div>
   );
 };

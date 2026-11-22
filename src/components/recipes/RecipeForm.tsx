@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import {
   Plus,
   Trash2,
@@ -90,6 +91,20 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({
   const [aiError, setAiError] = useState<string | null>(null);
   const [showRawPasteModal, setShowRawPasteModal] = useState(false);
   const [rawText, setRawText] = useState('');
+
+  useEffect(() => {
+    if (!showRawPasteModal) return;
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setShowRawPasteModal(false);
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = originalOverflow;
+    };
+  }, [showRawPasteModal]);
 
   // Handle Multi-MealType toggle
   const toggleMealType = (type: MealType) => {
@@ -980,56 +995,69 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({
       </div>
 
       {/* Modal Paste Raw Text AI */}
-      {showRawPasteModal && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-sage-300 space-y-4">
-            <div className="flex items-center justify-between border-b border-sage-100 pb-3">
-              <div className="flex items-center gap-2 font-bold text-sage-900">
-                <ClipboardPaste className="w-5 h-5 text-sage-600" />
-                <span>Ekstrak Resep Otomatis (AI)</span>
+      {showRawPasteModal &&
+        createPortal(
+          <div
+            onClick={() => setShowRawPasteModal(false)}
+            className="fixed inset-0 z-[99999] w-screen h-screen h-[100dvh] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 animate-fadeIn select-none overflow-y-auto"
+            style={{
+              paddingTop: 'max(env(safe-area-inset-top, 16px), 16px)',
+              paddingBottom: 'max(env(safe-area-inset-bottom, 16px), 16px)',
+            }}
+          >
+            <div
+              onClick={(e) => e.stopPropagation()}
+              className="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-sage-300 space-y-4 animate-scaleUp my-auto"
+            >
+              <div className="flex items-center justify-between border-b border-sage-100 pb-3">
+                <div className="flex items-center gap-2 font-bold text-sage-900">
+                  <ClipboardPaste className="w-5 h-5 text-sage-600" />
+                  <span>Ekstrak Resep Otomatis (AI)</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setShowRawPasteModal(false)}
+                  className="w-8 h-8 rounded-full bg-sage-100 hover:bg-sage-200 text-sage-600 flex items-center justify-center transition-colors cursor-pointer"
+                  title="Tutup"
+                >
+                  <X className="w-4 h-4" />
+                </button>
               </div>
-              <button
-                type="button"
-                onClick={() => setShowRawPasteModal(false)}
-                className="text-sage-400 hover:text-sage-700"
-              >
-                <X className="w-5 h-5" />
-              </button>
+
+              <p className="text-xs text-sage-600">
+                Paste teks resep mentah dari WhatsApp, Instagram, atau blog. Asisten AI akan otomatis memisahkan nama masakan, bahan, bumbu, dan langkah memasaknya.
+              </p>
+
+              <textarea
+                rows={8}
+                placeholder="Contoh:&#10;Resep Oseng Tempe Puyuh&#10;Bahan: Telur puyuh, tempe...&#10;Bumbu: Masako, kecap, saus sambal..."
+                value={rawText}
+                onChange={(e) => setRawText(e.target.value)}
+                className="w-full p-3 rounded-xl border border-sage-300 focus:border-sage-500 outline-none text-xs font-mono text-sage-900"
+              />
+
+              <div className="flex items-center justify-end gap-2 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setShowRawPasteModal(false)}
+                  className="px-4 py-2 rounded-xl text-sage-700 hover:bg-sage-100 text-sm font-semibold transition-colors cursor-pointer"
+                >
+                  Tutup
+                </button>
+                <button
+                  type="button"
+                  disabled={isAiLoading || !rawText.trim()}
+                  onClick={handleAIParse}
+                  className="px-5 py-2.5 rounded-xl bg-sage-600 hover:bg-sage-700 text-white text-sm font-semibold flex items-center gap-2 shadow-sm disabled:opacity-50 transition-colors cursor-pointer"
+                >
+                  <Sparkles className="w-4 h-4" />
+                  <span>{isAiLoading ? 'Memproses AI...' : 'Ekstrak Resep'}</span>
+                </button>
+              </div>
             </div>
-
-            <p className="text-xs text-sage-600">
-              Paste teks resep mentah dari WhatsApp, Instagram, atau blog. Asisten AI akan otomatis memisahkan nama masakan, bahan, bumbu, dan langkah memasaknya.
-            </p>
-
-            <textarea
-              rows={8}
-              placeholder="Contoh:&#10;Resep Oseng Tempe Puyuh&#10;Bahan: Telur puyuh, tempe...&#10;Bumbu: Masako, kecap, saus sambal..."
-              value={rawText}
-              onChange={(e) => setRawText(e.target.value)}
-              className="w-full p-3 rounded-xl border border-sage-300 focus:border-sage-500 outline-none text-xs font-mono text-sage-900"
-            />
-
-            <div className="flex items-center justify-end gap-2 pt-2">
-              <button
-                type="button"
-                onClick={() => setShowRawPasteModal(false)}
-                className="px-4 py-2 rounded-xl text-sage-700 hover:bg-sage-100 text-sm font-semibold"
-              >
-                Tutup
-              </button>
-              <button
-                type="button"
-                disabled={isAiLoading || !rawText.trim()}
-                onClick={handleAIParse}
-                className="px-5 py-2 rounded-xl bg-sage-600 hover:bg-sage-700 text-white text-sm font-semibold flex items-center gap-2 shadow-sm disabled:opacity-50"
-              >
-                <Sparkles className="w-4 h-4" />
-                <span>{isAiLoading ? 'Memproses AI...' : 'Ekstrak Resep'}</span>
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+          </div>,
+          document.body
+        )}
 
       {/* Lightbox Modal for Uploaded Recipe Photos */}
       <ImageLightbox
