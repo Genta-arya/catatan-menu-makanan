@@ -1,4 +1,4 @@
-import { getAISettings } from './storage';
+import { getUserSettings, VPS_API_BASE } from './storage';
 import type { Recipe, MealType } from '../types/recipe';
 
 export interface AIRecipeResult {
@@ -14,17 +14,15 @@ export interface AIRecipeResult {
   notes?: string;
 }
 
-// Clean and extract JSON from model responses (which may include reasoning or markdown)
+// Clean and extract JSON from model responses (handles reasoning or markdown wrappers)
 function extractJSON<T>(text: string): T | null {
   try {
-    // 1. Try direct parse
     return JSON.parse(text);
   } catch {
     /* continue */
   }
 
   try {
-    // 2. Remove markdown code fences ```json ... ```
     const cleaned = text.replace(/```(?:json)?\s*([\s\S]*?)\s*```/g, '$1').trim();
     return JSON.parse(cleaned);
   } catch {
@@ -32,7 +30,6 @@ function extractJSON<T>(text: string): T | null {
   }
 
   try {
-    // 3. Find first { and last }
     const firstBrace = text.indexOf('{');
     const lastBrace = text.lastIndexOf('}');
     if (firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace) {
@@ -46,74 +43,46 @@ function extractJSON<T>(text: string): T | null {
   return null;
 }
 
-async function call9RouterChat(messages: Array<{ role: string; content: string }>, maxTokens = 2500): Promise<string> {
-  const settings = await getAISettings();
-  const url = `${settings.baseUrl.replace(/\/+$/, '')}/chat/completions`;
+// Call AI via secure backend proxy (Server manages credentials, zero client API key exposure)
+async function callAIChat(messages: Array<{ role: string; content: string }>, maxTokens = 2500): Promise<string> {
+  const settings = await getUserSettings();
 
-  const payload = {
-    model: settings.model || 'CODING-FREE',
-    messages,
-    max_tokens: maxTokens,
-    temperature: 0.7,
-    stream: false,
-  };
+  // Inject user preference context
+  const enrichedMessages = [...messages];
+  if (settings.cookingStyle || settings.spiciness) {
+    const userPrefNote = `Preferensi Pengguna: Gaya masakan '${settings.cookingStyle || 'rumahan'}', tingkat kepedasan '${settings.spiciness || 'sedang'}', porsi acuan ${settings.defaultServings || 2} porsi.`;
+    if (enrichedMessages[0]?.role === 'system') {
+      enrichedMessages[0].content += `\n${userPrefNote}`;
+    }
+  }
 
-  const response = await fetch(url, {
+  const chatUrl = `${VPS_API_BASE}/chat`;
+
+  const response = await fetch(chatUrl, {
     method: 'POST',
     headers: {
-      'Authorization': `Bearer ${settings.apiKey}`,
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify(payload),
+    body: JSON.stringify({
+      messages: enrichedMessages,
+      max_tokens: maxTokens,
+      temperature: 0.7,
+    }),
   });
 
   if (!response.ok) {
     const errText = await response.text();
-    throw new Error(`9Router Error (${response.status}): ${errText}`);
+    throw new Error(`Asisten AI sedang sibuk (${response.status}). Silakan coba beberapa saat lagi.`);
   }
 
-  const rawText = await response.text();
+  const jsonResponse = await response.json();
+  const completionData = jsonResponse.data || jsonResponse;
 
-  // 1. Check if response is Server-Sent Events (SSE) format
-  if (rawText.includes('data: ') && (rawText.includes('"delta"') || rawText.includes('[DONE]'))) {
-    let accumulated = '';
-    const lines = rawText.split('\n');
-    for (const line of lines) {
-      const trimmed = line.trim();
-      if (!trimmed.startsWith('data:')) continue;
-      const jsonStr = trimmed.replace(/^data:\s*/, '').trim();
-      if (jsonStr === '[DONE]') continue;
-      try {
-        const chunk = JSON.parse(jsonStr);
-        const delta = chunk.choices?.[0]?.delta;
-        if (delta?.content) accumulated += delta.content;
-      } catch {
-        /* skip invalid chunk */
-      }
-    }
-    if (accumulated.trim()) return accumulated;
-  }
-
-  // 2. Standard JSON response
-  let data: any;
-  try {
-    data = JSON.parse(rawText);
-  } catch {
-    const start = rawText.indexOf('{');
-    const end = rawText.lastIndexOf('}');
-    if (start !== -1 && end !== -1) {
-      data = JSON.parse(rawText.substring(start, end + 1));
-    } else {
-      throw new Error(`Gagal membaca respon 9Router: ${rawText.slice(0, 200)}`);
-    }
-  }
-
-  const message = data.choices?.[0]?.message;
+  const message = completionData.choices?.[0]?.message;
   if (!message) {
-    throw new Error('Tidak ada respon dari model 9Router.');
+    throw new Error('Tidak ada respon dari Asisten AI.');
   }
 
-  // Model might return content or reasoning
   const output = message.content || message.reasoning || '';
   if (!output) {
     throw new Error('Respon AI kosong.');
@@ -152,8 +121,8 @@ Kembalikan HANYA JSON murni (valid JSON) sesuai skema berikut tanpa teks obrolan
   "notes": "Tips memasak agar lebih gurih dan nikmat"
 }`;
 
-  const rawResult = await call9RouterChat([
-    { role: 'system', 'content': 'Kamu selalu menjawab HANYA dalam JSON valid tanpa markdown.' },
+  const rawResult = await callAIChat([
+    { role: 'system', content: 'Kamu selalu menjawab HANYA dalam JSON valid tanpa markdown.' },
     { role: 'user', content: prompt },
   ]);
 
@@ -162,7 +131,6 @@ Kembalikan HANYA JSON murni (valid JSON) sesuai skema berikut tanpa teks obrolan
     throw new Error('Format respon AI tidak dapat dibaca sebagai resep. Silakan coba kembali.');
   }
 
-  // Sanitize
   return {
     title: parsed.title || dishName,
     category: parsed.category || 'Lauk Utama',
@@ -210,8 +178,8 @@ Kembalikan HANYA JSON murni (valid JSON) sesuai skema berikut tanpa tambahan mar
   "notes": "Catatan tambahan"
 }`;
 
-  const rawResult = await call9RouterChat([
-    { role: 'system', 'content': 'Kamu selalu menjawab HANYA dalam JSON valid tanpa markdown.' },
+  const rawResult = await callAIChat([
+    { role: 'system', content: 'Kamu selalu menjawab HANYA dalam JSON valid tanpa markdown.' },
     { role: 'user', content: prompt },
   ]);
 

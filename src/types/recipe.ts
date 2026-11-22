@@ -48,8 +48,12 @@ export interface ShoppingItem {
   sourceRecipeTitle?: string;
 }
 
-export interface AISettings {
-  baseUrl: string;
-  apiKey: string;
-  model: string;
+export interface UserSettings {
+  defaultServings: number;
+  spiciness: 'tidak-pedas' | 'sedang' | 'pedas';
+  cookingStyle: 'rumahan' | 'praktis' | 'sehat';
+  cloudSync: boolean;
 }
+
+// Backward compatibility alias if needed
+export type AISettings = UserSettings;

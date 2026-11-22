@@ -191,7 +191,7 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({
       setServings(generated.servings || 4);
       if (generated.notes) setNotes(generated.notes);
     } catch (err: any) {
-      setAiError(err.message || 'Gagal generate dengan AI. Periksa koneksi 9Router Anda.');
+      setAiError(err.message || 'Gagal generate dengan AI. Silakan coba sesaat lagi.');
     } finally {
       setIsAiLoading(false);
     }
@@ -281,7 +281,7 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({
           </div>
           <div>
             <h4 className="font-bold text-sage-900 text-sm sm:text-base">
-              Bantuan AI 9Router
+              Bantuan Asisten AI
             </h4>
             <p className="text-sage-600 text-xs sm:text-sm">
               Ketikkan judul resep lalu tekan auto-generate, atau paste teks mentah resep Anda.
@@ -751,7 +751,7 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({
             <div className="flex items-center justify-between border-b border-sage-100 pb-3">
               <div className="flex items-center gap-2 font-bold text-sage-900">
                 <ClipboardPaste className="w-5 h-5 text-sage-600" />
-                <span>Ekstrak Resep Otomatis (9Router)</span>
+                <span>Ekstrak Resep Otomatis (AI)</span>
               </div>
               <button
                 type="button"
@@ -763,7 +763,7 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({
             </div>
 
             <p className="text-xs text-sage-600">
-              Paste teks resep mentah dari WhatsApp, Instagram, atau blog. AI 9Router akan otomatis memisahkan nama masakan, bahan, bumbu, dan langkah memasaknya.
+              Paste teks resep mentah dari WhatsApp, Instagram, atau blog. Asisten AI akan otomatis memisahkan nama masakan, bahan, bumbu, dan langkah memasaknya.
             </p>
 
             <textarea

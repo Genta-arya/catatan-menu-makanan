@@ -73,7 +73,7 @@ export const InspirasiManager: React.FC = () => {
       const result = await generateRecipeWithAI(aiPrompt.trim());
       setAiDishIdea(result);
     } catch (err: any) {
-      setAiError(err.message || 'Gagal terhubung dengan 9Router AI.');
+      setAiError(err.message || 'Gagal terhubung dengan Asisten AI.');
     } finally {
       setIsAiLoading(false);
     }
@@ -87,7 +87,7 @@ export const InspirasiManager: React.FC = () => {
           Inspirasi & Rekomendasi Menu
         </h1>
         <p className="text-sage-600 text-xs sm:text-sm mt-1">
-          Bimbang mau masak apa hari ini? Gunakan pengacak menu atau tanyakan ide kreatif ke AI 9Router.
+          Bimbang mau masak apa hari ini? Gunakan pengacak menu atau tanyakan ide kreatif ke Asisten Koki AI.
         </p>
       </div>
 
@@ -185,7 +185,7 @@ export const InspirasiManager: React.FC = () => {
         </div>
       </div>
 
-      {/* Feature 2: Tanya AI 9Router */}
+      {/* Feature 2: Tanya Asisten AI */}
       <div className="bg-white rounded-3xl border border-sage-200 shadow-sage-md p-6 sm:p-8 space-y-6">
         <div className="flex items-center gap-3 border-b border-sage-100 pb-4">
           <div className="w-10 h-10 rounded-2xl bg-sage-100 text-sage-700 flex items-center justify-center font-bold">
@@ -193,7 +193,7 @@ export const InspirasiManager: React.FC = () => {
           </div>
           <div>
             <h2 className="font-extrabold text-sage-900 text-base sm:text-lg">
-              Tanya Koki AI (Powered by 9Router)
+              Tanya Asisten Koki AI
             </h2>
             <p className="text-xs text-sage-500">
               Ketikkan bahan yang ada di kulkas Anda, AI akan meracikkan ide menu masakan lengkap.
@@ -244,7 +244,7 @@ export const InspirasiManager: React.FC = () => {
             <div className="flex items-center justify-between border-b border-sage-200 pb-3">
               <div>
                 <span className="text-[10px] font-bold text-sage-500 uppercase tracking-wider block">
-                  Rekomendasi Koki AI 9Router
+                  Rekomendasi Asisten Koki AI
                 </span>
                 <h3 className="text-xl font-extrabold text-sage-950 mt-0.5">
                   {aiDishIdea.title}

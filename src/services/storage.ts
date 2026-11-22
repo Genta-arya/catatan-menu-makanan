@@ -1,19 +1,22 @@
 import { get, set } from 'idb-keyval';
-import type { Recipe, MealPlanDay, ShoppingItem, AISettings } from '../types/recipe';
+import type { Recipe, MealPlanDay, ShoppingItem, UserSettings } from '../types/recipe';
 
 const RECIPES_KEY = 'menu_makanan_recipes';
 const MEAL_PLANS_KEY = 'menu_makanan_mealplans';
 const SHOPPING_KEY = 'menu_makanan_shopping';
-const AI_SETTINGS_KEY = 'menu_makanan_ai_settings';
+const USER_SETTINGS_KEY = 'menu_makanan_user_settings';
 
-// VPS MySQL API Endpoint
+// API Backend Base URL
 export const VPS_API_BASE = 'https://router.mgentaarya.my.id/api/menu';
 
-export const DEFAULT_AI_SETTINGS: AISettings = {
-  baseUrl: 'https://router.mgentaarya.my.id/v1',
-  apiKey: 'sk-e9a813ca4d8d749d-3buibr-909d375d',
-  model: 'CODING-FREE',
+export const DEFAULT_USER_SETTINGS: UserSettings = {
+  defaultServings: 2,
+  spiciness: 'sedang',
+  cookingStyle: 'rumahan',
+  cloudSync: true,
 };
+
+export const DEFAULT_AI_SETTINGS = DEFAULT_USER_SETTINGS;
 
 // Initial Indonesian Home Dishes (Preloaded in VPS MySQL)
 export const INITIAL_RECIPES: Recipe[] = [
@@ -361,14 +364,18 @@ export async function saveShoppingList(items: ShoppingItem[]): Promise<void> {
   }
 }
 
-// AI Settings
-export async function getAISettings(): Promise<AISettings> {
-  return await getStorageItem<AISettings>(AI_SETTINGS_KEY, DEFAULT_AI_SETTINGS);
+// User & AI Settings
+export async function getUserSettings(): Promise<UserSettings> {
+  return await getStorageItem<UserSettings>(USER_SETTINGS_KEY, DEFAULT_USER_SETTINGS);
 }
 
-export async function saveAISettings(settings: AISettings): Promise<void> {
-  await setStorageItem(AI_SETTINGS_KEY, settings);
+export async function saveUserSettings(settings: UserSettings): Promise<void> {
+  await setStorageItem(USER_SETTINGS_KEY, settings);
 }
+
+// Backward compatibility alias
+export const getAISettings = getUserSettings;
+export const saveAISettings = saveUserSettings;
 
 // Export & Import
 export async function exportAllData(): Promise<string> {

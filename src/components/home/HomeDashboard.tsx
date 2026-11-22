@@ -54,11 +54,11 @@ export const HomeDashboard: React.FC = () => {
           <div className="flex flex-wrap items-center gap-2">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/15 backdrop-blur-md text-xs font-semibold text-sage-100 border border-white/20">
               <Sparkles className="w-3.5 h-3.5 text-sage-200" />
-              <span>AI Combo: CODING-FREE</span>
+              <span>Asisten Koki Cerdas</span>
             </div>
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/20 backdrop-blur-md text-xs font-semibold text-emerald-100 border border-emerald-400/30">
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-              <span>Database: server.hostdata.id (Active)</span>
+              <span>Penyimpanan Cloud Aktif</span>
             </div>
           </div>
 
@@ -67,7 +67,7 @@ export const HomeDashboard: React.FC = () => {
           </h1>
 
           <p className="text-sage-100/90 text-xs sm:text-sm leading-relaxed">
-            Kelola buku resep keluarga, pisahkan bahan dan bumbu dapur, rencanakan jadwal makan mingguan, serta manfaatkan AI 9Router untuk meracik ide masakan baru.
+            Kelola buku resep keluarga, pisahkan bahan dan bumbu dapur, rencanakan jadwal makan mingguan, serta manfaatkan Asisten AI untuk meracik ide masakan baru.
           </p>
 
           <div className="pt-2 flex flex-wrap items-center gap-3">

@@ -80,7 +80,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath = '/' }) => {
             <button
               onClick={() => setIsSettingsOpen(true)}
               className="p-2.5 rounded-xl hover:bg-sage-100 border border-sage-200 text-sage-700 shadow-sage-sm transition-colors"
-              title="Pengaturan 9Router AI"
+              title="Pengaturan Aplikasi"
             >
               <Settings className="w-4 h-4 text-sage-600" />
             </button>
