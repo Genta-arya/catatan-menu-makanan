@@ -66,7 +66,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `dapursage-backup-${new Date().toISOString().slice(0, 10)}.json`;
+      a.download = `dapur-radha-backup-${new Date().toISOString().slice(0, 10)}.json`;
       a.click();
       URL.revokeObjectURL(url);
     } catch {

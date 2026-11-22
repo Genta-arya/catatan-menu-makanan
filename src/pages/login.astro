@@ -1,0 +1,12 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { LoginForm } from '../components/auth/LoginForm';
+---
+
+<Layout
+  title="Masuk - Dapur Radha"
+  description="Masuk ke aplikasi Dapur Radha untuk mengelola catatan menu makanan dan jadwal resep keluarga."
+  currentPath="/login"
+>
+  <LoginForm client:load />
+</Layout>

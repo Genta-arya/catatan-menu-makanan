@@ -102,7 +102,7 @@ export const ShoppingManager: React.FC = () => {
       text += `\n`;
     }
 
-    text += `_Dibuat dengan DapurSage App_`;
+    text += `_Dibuat dengan Dapur Radha App_`;
 
     navigator.clipboard.writeText(text);
     setCopied(true);
