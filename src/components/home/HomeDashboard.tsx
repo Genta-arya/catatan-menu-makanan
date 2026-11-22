@@ -57,10 +57,6 @@ export const HomeDashboard: React.FC = () => {
               <Sparkles className="w-3.5 h-3.5 text-sage-200" />
               <span>Asisten Koki Cerdas</span>
             </div>
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/20 backdrop-blur-md text-xs font-semibold text-emerald-100 border border-emerald-400/30">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-              <span>Penyimpanan Cloud Aktif</span>
-            </div>
           </div>
 
           <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight leading-tight">
