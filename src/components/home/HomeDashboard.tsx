@@ -146,22 +146,13 @@ export const HomeDashboard: React.FC = () => {
 
       {/* Menu Hari Ini Showcase */}
       <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <h2 className="text-xl sm:text-2xl font-extrabold text-sage-950">
-              Menu Masakan Hari Ini
-            </h2>
-            <p className="text-sage-600 text-xs sm:text-sm">
-              Jadwal makanan keluarga untuk {new Date().toLocaleDateString('id-ID', { dateStyle: 'full' })}
-            </p>
-          </div>
-          <a
-            href="/planner"
-            className="text-xs sm:text-sm font-bold text-sage-600 hover:text-sage-800 flex items-center gap-1"
-          >
-            <span>Ubah Jadwal</span>
-            <ArrowRight className="w-4 h-4" />
-          </a>
+        <div>
+          <h2 className="text-xl sm:text-2xl font-extrabold text-sage-950">
+            Menu Masakan Hari Ini
+          </h2>
+          <p className="text-sage-600 text-xs sm:text-sm">
+            Jadwal makanan keluarga untuk {new Date().toLocaleDateString('id-ID', { dateStyle: 'full' })}
+          </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
