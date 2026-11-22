@@ -225,13 +225,13 @@ export const ShoppingManager: React.FC = () => {
               <div
                 key={item.id}
                 onClick={() => handleToggle(item.id)}
-                className={`p-3 rounded-2xl border transition-all cursor-pointer flex items-start gap-3 ${
+                className={`p-3 sm:p-3.5 rounded-2xl border transition-all cursor-pointer flex items-start gap-3 ${
                   item.isChecked
                     ? 'bg-sage-50/70 border-sage-200 opacity-60 text-sage-400'
                     : 'bg-white border-sage-200 hover:border-sage-400 text-sage-900 shadow-xs'
                 }`}
               >
-                <div className="pt-0.5 shrink-0">
+                <div className="pt-0.5 shrink-0 text-sage-400">
                   {item.isChecked ? (
                     <CheckCircle2 className="w-5 h-5 text-sage-600" />
                   ) : (
@@ -239,21 +239,21 @@ export const ShoppingManager: React.FC = () => {
                   )}
                 </div>
 
-                <div className="flex-1 min-w-0 flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
-                  <div className="min-w-0 pr-1">
-                    <span className={`text-sm font-medium break-words ${item.isChecked ? 'line-through' : ''}`}>
+                <div className="flex-1 min-w-0 flex flex-col sm:flex-row sm:items-baseline justify-between gap-1.5 sm:gap-3">
+                  <div className="min-w-0 flex-1">
+                    <span className={`text-sm font-medium leading-snug break-words ${item.isChecked ? 'line-through text-sage-400' : 'text-sage-900'}`}>
                       {item.name}
                     </span>
                     {item.sourceRecipeTitle && (
-                      <span className="text-[10px] text-sage-400 block break-words mt-0.5">
+                      <span className="text-[11px] text-sage-500 block break-words mt-0.5">
                         Dari: {item.sourceRecipeTitle}
                       </span>
                     )}
                   </div>
 
-                  <div className="flex items-center gap-2 shrink-0">
+                  <div className="flex items-center gap-2 self-start sm:self-auto shrink-0 max-w-full">
                     {item.amount && (
-                      <span className="text-xs font-semibold px-2 py-0.5 rounded-md bg-sage-100 text-sage-800 break-words max-w-full">
+                      <span className="text-xs font-semibold px-2.5 py-1 rounded-lg bg-sage-100 text-sage-800 break-words max-w-full leading-relaxed border border-sage-200/60">
                         {item.amount}
                       </span>
                     )}
@@ -263,10 +263,10 @@ export const ShoppingManager: React.FC = () => {
                         e.stopPropagation();
                         handleDeleteItem(item.id);
                       }}
-                      className="p-1 text-sage-400 hover:text-red-500 transition-colors cursor-pointer"
+                      className="p-1.5 text-sage-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors cursor-pointer shrink-0"
                       title="Hapus dari daftar belanja"
                     >
-                      <Trash2 className="w-3.5 h-3.5" />
+                      <Trash2 className="w-4 h-4" />
                     </button>
                   </div>
                 </div>
@@ -291,13 +291,13 @@ export const ShoppingManager: React.FC = () => {
               <div
                 key={item.id}
                 onClick={() => handleToggle(item.id)}
-                className={`p-3 rounded-2xl border transition-all cursor-pointer flex items-start gap-3 ${
+                className={`p-3 sm:p-3.5 rounded-2xl border transition-all cursor-pointer flex items-start gap-3 ${
                   item.isChecked
                     ? 'bg-sage-50/70 border-sage-200 opacity-60 text-sage-400'
                     : 'bg-white border-sage-200 hover:border-amber-400 text-sage-900 shadow-xs'
                 }`}
               >
-                <div className="pt-0.5 shrink-0">
+                <div className="pt-0.5 shrink-0 text-amber-500">
                   {item.isChecked ? (
                     <CheckCircle2 className="w-5 h-5 text-amber-600" />
                   ) : (
@@ -305,21 +305,21 @@ export const ShoppingManager: React.FC = () => {
                   )}
                 </div>
 
-                <div className="flex-1 min-w-0 flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
-                  <div className="min-w-0 pr-1">
-                    <span className={`text-sm font-medium break-words ${item.isChecked ? 'line-through' : ''}`}>
+                <div className="flex-1 min-w-0 flex flex-col sm:flex-row sm:items-baseline justify-between gap-1.5 sm:gap-3">
+                  <div className="min-w-0 flex-1">
+                    <span className={`text-sm font-medium leading-snug break-words ${item.isChecked ? 'line-through text-sage-400' : 'text-sage-900'}`}>
                       {item.name}
                     </span>
                     {item.sourceRecipeTitle && (
-                      <span className="text-[10px] text-sage-400 block break-words mt-0.5">
+                      <span className="text-[11px] text-sage-500 block break-words mt-0.5">
                         Dari: {item.sourceRecipeTitle}
                       </span>
                     )}
                   </div>
 
-                  <div className="flex items-center gap-2 shrink-0">
+                  <div className="flex items-center gap-2 self-start sm:self-auto shrink-0 max-w-full">
                     {item.amount && (
-                      <span className="text-xs font-semibold px-2 py-0.5 rounded-md bg-amber-50 text-amber-800 border border-amber-200 break-words max-w-full">
+                      <span className="text-xs font-semibold px-2.5 py-1 rounded-lg bg-amber-50 text-amber-800 border border-amber-200 break-words max-w-full leading-relaxed">
                         {item.amount}
                       </span>
                     )}
@@ -329,10 +329,10 @@ export const ShoppingManager: React.FC = () => {
                         e.stopPropagation();
                         handleDeleteItem(item.id);
                       }}
-                      className="p-1 text-sage-400 hover:text-red-500 transition-colors cursor-pointer"
+                      className="p-1.5 text-sage-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors cursor-pointer shrink-0"
                       title="Hapus dari daftar belanja"
                     >
-                      <Trash2 className="w-3.5 h-3.5" />
+                      <Trash2 className="w-4 h-4" />
                     </button>
                   </div>
                 </div>
