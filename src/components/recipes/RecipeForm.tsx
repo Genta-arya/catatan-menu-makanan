@@ -319,7 +319,7 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({
       )}
 
       {/* 1. Basic Info */}
-      <div className="bg-white p-5 sm:p-7 rounded-2xl border border-sage-200 shadow-sage-sm space-y-5">
+      <div className="bg-white p-4 sm:p-7 rounded-3xl border border-sage-200 shadow-sage-sm space-y-5">
         <h3 className="font-bold text-sage-900 text-lg border-b border-sage-100 pb-3 flex items-center gap-2">
           <span className="w-6 h-6 rounded-full bg-sage-200 text-sage-800 text-xs flex items-center justify-center font-bold">
             1
@@ -350,42 +350,42 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({
             <button
               type="button"
               onClick={() => toggleMealType('pagi')}
-              className={`py-3 px-3 rounded-xl border font-semibold text-xs sm:text-sm flex flex-col sm:flex-row items-center justify-center gap-1.5 transition-all ${
+              className={`py-2.5 sm:py-3 px-2 sm:px-3 rounded-xl border font-bold text-xs sm:text-sm flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-1.5 transition-all ${
                 mealTypes.includes('pagi')
                   ? 'bg-orange-50 border-orange-400 text-orange-800 shadow-sm'
                   : 'bg-white border-sage-200 text-sage-500 hover:border-sage-300'
               }`}
             >
-              <Sunrise className="w-4 h-4 text-orange-500" />
-              <span>Sarapan Pagi</span>
+              <Sunrise className="w-4 h-4 text-orange-500 shrink-0" />
+              <span className="truncate">Pagi</span>
               {mealTypes.includes('pagi') && <Check className="w-3.5 h-3.5 ml-1 hidden sm:inline" />}
             </button>
 
             <button
               type="button"
               onClick={() => toggleMealType('siang')}
-              className={`py-3 px-3 rounded-xl border font-semibold text-xs sm:text-sm flex flex-col sm:flex-row items-center justify-center gap-1.5 transition-all ${
+              className={`py-2.5 sm:py-3 px-2 sm:px-3 rounded-xl border font-bold text-xs sm:text-sm flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-1.5 transition-all ${
                 mealTypes.includes('siang')
                   ? 'bg-amber-50 border-amber-400 text-amber-800 shadow-sm'
                   : 'bg-white border-sage-200 text-sage-500 hover:border-sage-300'
               }`}
             >
-              <Sun className="w-4 h-4 text-amber-500" />
-              <span>Makan Siang</span>
+              <Sun className="w-4 h-4 text-amber-500 shrink-0" />
+              <span className="truncate">Siang</span>
               {mealTypes.includes('siang') && <Check className="w-3.5 h-3.5 ml-1 hidden sm:inline" />}
             </button>
 
             <button
               type="button"
               onClick={() => toggleMealType('malam')}
-              className={`py-3 px-3 rounded-xl border font-semibold text-xs sm:text-sm flex flex-col sm:flex-row items-center justify-center gap-1.5 transition-all ${
+              className={`py-2.5 sm:py-3 px-2 sm:px-3 rounded-xl border font-bold text-xs sm:text-sm flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-1.5 transition-all ${
                 mealTypes.includes('malam')
                   ? 'bg-indigo-50 border-indigo-400 text-indigo-800 shadow-sm'
                   : 'bg-white border-sage-200 text-sage-500 hover:border-sage-300'
               }`}
             >
-              <Moon className="w-4 h-4 text-indigo-500" />
-              <span>Makan Malam</span>
+              <Moon className="w-4 h-4 text-indigo-500 shrink-0" />
+              <span className="truncate">Malam</span>
               {mealTypes.includes('malam') && <Check className="w-3.5 h-3.5 ml-1 hidden sm:inline" />}
             </button>
           </div>
@@ -416,7 +416,7 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({
                 max="50"
                 value={servings}
                 onChange={(e) => setServings(Number(e.target.value) || 1)}
-                className="w-full pl-4 pr-12 py-2.5 rounded-xl border border-sage-300 focus:border-sage-500 focus:ring-2 focus:ring-sage-200 outline-none text-sage-900 text-sm transition-all"
+                className="w-full pl-4 pr-14 py-2.5 rounded-xl border border-sage-300 focus:border-sage-500 focus:ring-2 focus:ring-sage-200 outline-none text-sage-900 text-sm transition-all"
               />
               <span className="absolute right-4 top-2.5 text-xs text-sage-500 font-medium">Orang</span>
             </div>
@@ -424,10 +424,10 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({
         </div>
 
         {/* Waktu Masak */}
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 gap-3 sm:gap-4">
           <div>
             <label className="block text-xs font-semibold text-sage-700 uppercase tracking-wider mb-1.5">
-              Persiapan (Menit)
+              Persiapan
             </label>
             <div className="relative">
               <input
@@ -435,14 +435,14 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({
                 min="0"
                 value={prepTime}
                 onChange={(e) => setPrepTime(Number(e.target.value) || 0)}
-                className="w-full pl-4 pr-12 py-2.5 rounded-xl border border-sage-300 focus:border-sage-500 focus:ring-2 focus:ring-sage-200 outline-none text-sage-900 text-sm transition-all"
+                className="w-full pl-3 sm:pl-4 pr-12 py-2.5 rounded-xl border border-sage-300 focus:border-sage-500 focus:ring-2 focus:ring-sage-200 outline-none text-sage-900 text-sm transition-all"
               />
-              <span className="absolute right-4 top-2.5 text-xs text-sage-500 font-medium">m</span>
+              <span className="absolute right-3 sm:right-4 top-2.5 text-xs text-sage-500 font-medium">menit</span>
             </div>
           </div>
           <div>
             <label className="block text-xs font-semibold text-sage-700 uppercase tracking-wider mb-1.5">
-              Waktu Masak (Menit)
+              Memasak
             </label>
             <div className="relative">
               <input
@@ -450,9 +450,9 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({
                 min="0"
                 value={cookTime}
                 onChange={(e) => setCookTime(Number(e.target.value) || 0)}
-                className="w-full pl-4 pr-12 py-2.5 rounded-xl border border-sage-300 focus:border-sage-500 focus:ring-2 focus:ring-sage-200 outline-none text-sage-900 text-sm transition-all"
+                className="w-full pl-3 sm:pl-4 pr-12 py-2.5 rounded-xl border border-sage-300 focus:border-sage-500 focus:ring-2 focus:ring-sage-200 outline-none text-sage-900 text-sm transition-all"
               />
-              <span className="absolute right-4 top-2.5 text-xs text-sage-500 font-medium">m</span>
+              <span className="absolute right-3 sm:right-4 top-2.5 text-xs text-sage-500 font-medium">menit</span>
             </div>
           </div>
         </div>
@@ -472,23 +472,23 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({
       </div>
 
       {/* 2. Upload Hingga 5 Foto Masakan */}
-      <div className="bg-white p-5 sm:p-7 rounded-2xl border border-sage-200 shadow-sage-sm space-y-4">
+      <div className="bg-white p-4 sm:p-7 rounded-3xl border border-sage-200 shadow-sage-sm space-y-4">
         <div className="flex items-center justify-between border-b border-sage-100 pb-3">
-          <h3 className="font-bold text-sage-900 text-lg flex items-center gap-2">
+          <h3 className="font-bold text-sage-900 text-base sm:text-lg flex items-center gap-2">
             <span className="w-6 h-6 rounded-full bg-sage-200 text-sage-800 text-xs flex items-center justify-center font-bold">
               2
             </span>
-            Foto Masakan (Maksimal 5 Foto)
+            Foto Masakan (Maksimal 5)
           </h3>
-          <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-sage-100 text-sage-800">
-            {images.length}/5 Foto
+          <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-sage-100 text-sage-800">
+            {images.length}/5
           </span>
         </div>
 
         {/* Image Grid Preview */}
         <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
           {images.map((img, idx) => (
-            <div key={idx} className="relative aspect-square rounded-xl overflow-hidden border border-sage-300 group shadow-sm bg-sage-100">
+            <div key={idx} className="relative aspect-square rounded-2xl overflow-hidden border border-sage-300 group shadow-sm bg-sage-100">
               <img src={img} alt={`Foto masakan ${idx + 1}`} className="w-full h-full object-cover" />
               <button
                 type="button"
@@ -508,7 +508,7 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({
 
           {/* Upload Button Slot */}
           {images.length < 5 && (
-            <label className="aspect-square rounded-xl border-2 border-dashed border-sage-300 hover:border-sage-500 bg-sage-50/50 hover:bg-sage-100/50 flex flex-col items-center justify-center cursor-pointer transition-all p-3 text-center">
+            <label className="aspect-square rounded-2xl border-2 border-dashed border-sage-300 hover:border-sage-500 bg-sage-50/50 hover:bg-sage-100/50 flex flex-col items-center justify-center cursor-pointer transition-all p-3 text-center">
               <Camera className="w-6 h-6 text-sage-500 mb-1" />
               <span className="text-xs font-semibold text-sage-700">Tambah Foto</span>
               <span className="text-[10px] text-sage-500">Bisa drag / browse</span>
@@ -525,14 +525,14 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({
       </div>
 
       {/* 3. Section Bahan Utama */}
-      <div className="bg-white p-5 sm:p-7 rounded-2xl border border-sage-200 shadow-sage-sm space-y-4">
-        <div className="flex items-center justify-between border-b border-sage-100 pb-3">
-          <div>
-            <h3 className="font-bold text-sage-900 text-lg flex items-center gap-2">
-              <span className="w-6 h-6 rounded-full bg-sage-200 text-sage-800 text-xs flex items-center justify-center font-bold">
+      <div className="bg-white p-4 sm:p-7 rounded-3xl border border-sage-200 shadow-sage-sm space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 border-b border-sage-100 pb-3">
+          <div className="min-w-0">
+            <h3 className="font-bold text-sage-900 text-base sm:text-lg flex items-center gap-2">
+              <span className="w-6 h-6 rounded-full bg-sage-200 text-sage-800 text-xs flex items-center justify-center font-bold shrink-0">
                 3
               </span>
-              Daftar Bahan Utama
+              <span>Daftar Bahan Utama</span>
             </h3>
             <p className="text-xs text-sage-600 mt-0.5">
               Bahan masakan pokok (contoh: Tempe, Telur Puyuh, Daging, Sayuran).
@@ -541,7 +541,7 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({
           <button
             type="button"
             onClick={addIngredient}
-            className="px-3 py-1.5 rounded-lg bg-sage-100 hover:bg-sage-200 text-sage-800 text-xs font-semibold flex items-center gap-1.5 transition-colors"
+            className="self-start sm:self-auto shrink-0 px-3.5 py-2 rounded-xl bg-sage-100 hover:bg-sage-200 text-sage-800 text-xs font-bold flex items-center gap-1.5 transition-colors shadow-2xs whitespace-nowrap"
           >
             <Plus className="w-3.5 h-3.5" />
             <span>Tambah Bahan</span>
@@ -550,44 +550,54 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({
 
         <div className="space-y-2.5">
           {ingredients.map((item, idx) => (
-            <div key={item.id || idx} className="flex items-center gap-2">
-              <span className="w-6 text-center text-xs text-sage-400 font-semibold">{idx + 1}.</span>
-              <input
-                type="text"
-                placeholder="Nama Bahan (misal: Telur Puyuh)"
-                value={item.name}
-                onChange={(e) => updateIngredient(idx, 'name', e.target.value)}
-                className="flex-[2] px-3.5 py-2 rounded-xl border border-sage-300 focus:border-sage-500 outline-none text-sm text-sage-900"
-              />
-              <input
-                type="text"
-                placeholder="Takaran (misal: 15 butir)"
-                value={item.amount || ''}
-                onChange={(e) => updateIngredient(idx, 'amount', e.target.value)}
-                className="flex-1 px-3.5 py-2 rounded-xl border border-sage-300 focus:border-sage-500 outline-none text-sm text-sage-900"
-              />
-              <button
-                type="button"
-                onClick={() => removeIngredient(idx)}
-                className="p-2 text-sage-400 hover:text-red-500 transition-colors"
-                title="Hapus baris"
-              >
-                <Trash2 className="w-4 h-4" />
-              </button>
+            <div
+              key={item.id || idx}
+              className="p-3 bg-sage-50/60 rounded-2xl border border-sage-200/80 flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3 transition-all"
+            >
+              <div className="flex items-center gap-2 flex-1 min-w-0">
+                <span className="w-5 text-center text-xs text-sage-400 font-bold shrink-0">
+                  {idx + 1}.
+                </span>
+                <input
+                  type="text"
+                  placeholder="Nama Bahan (misal: Telur Puyuh)"
+                  value={item.name}
+                  onChange={(e) => updateIngredient(idx, 'name', e.target.value)}
+                  className="w-full min-w-0 px-3.5 py-2.5 rounded-xl border border-sage-300 focus:border-sage-500 focus:ring-2 focus:ring-sage-200 outline-none text-sm text-sage-900 bg-white transition-all font-medium"
+                />
+              </div>
+
+              <div className="flex items-center gap-2 pl-7 sm:pl-0 sm:w-56 shrink-0">
+                <input
+                  type="text"
+                  placeholder="Takaran (misal: 15 butir)"
+                  value={item.amount || ''}
+                  onChange={(e) => updateIngredient(idx, 'amount', e.target.value)}
+                  className="flex-1 min-w-0 px-3.5 py-2.5 rounded-xl border border-sage-300 focus:border-sage-500 focus:ring-2 focus:ring-sage-200 outline-none text-sm text-sage-900 bg-white transition-all"
+                />
+                <button
+                  type="button"
+                  onClick={() => removeIngredient(idx)}
+                  className="p-2.5 text-sage-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-colors shrink-0"
+                  title="Hapus baris"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
+              </div>
             </div>
           ))}
         </div>
       </div>
 
       {/* 4. Section Bumbu (Lengkap dengan Gambar Bumbu) */}
-      <div className="bg-white p-5 sm:p-7 rounded-2xl border border-sage-200 shadow-sage-sm space-y-4">
-        <div className="flex items-center justify-between border-b border-sage-100 pb-3">
-          <div>
-            <h3 className="font-bold text-sage-900 text-lg flex items-center gap-2">
-              <span className="w-6 h-6 rounded-full bg-sage-200 text-sage-800 text-xs flex items-center justify-center font-bold">
+      <div className="bg-white p-4 sm:p-7 rounded-3xl border border-sage-200 shadow-sage-sm space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 border-b border-sage-100 pb-3">
+          <div className="min-w-0">
+            <h3 className="font-bold text-sage-900 text-base sm:text-lg flex items-center gap-2">
+              <span className="w-6 h-6 rounded-full bg-sage-200 text-sage-800 text-xs flex items-center justify-center font-bold shrink-0">
                 4
               </span>
-              Daftar Bumbu & Rempah (Ada Foto Bumbu)
+              <span>Daftar Bumbu & Rempah (Ada Foto Bumbu)</span>
             </h3>
             <p className="text-xs text-sage-600 mt-0.5">
               Bumbu dapur, saus, rempah-rempah lengkap dengan opsi upload foto kemasan/bumbu.
@@ -596,7 +606,7 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({
           <button
             type="button"
             onClick={addSeasoning}
-            className="px-3 py-1.5 rounded-lg bg-sage-100 hover:bg-sage-200 text-sage-800 text-xs font-semibold flex items-center gap-1.5 transition-colors"
+            className="self-start sm:self-auto shrink-0 px-3.5 py-2 rounded-xl bg-sage-100 hover:bg-sage-200 text-sage-800 text-xs font-bold flex items-center gap-1.5 transition-colors shadow-2xs whitespace-nowrap"
           >
             <Plus className="w-3.5 h-3.5" />
             <span>Tambah Bumbu</span>
@@ -605,79 +615,100 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({
 
         <div className="space-y-3">
           {seasonings.map((item, idx) => (
-            <div key={item.id || idx} className="p-3 bg-sage-50/50 rounded-xl border border-sage-200 flex flex-col sm:flex-row items-start sm:items-center gap-2.5">
-              <span className="w-5 text-center text-xs text-sage-400 font-semibold hidden sm:inline">{idx + 1}.</span>
+            <div
+              key={item.id || idx}
+              className="p-3.5 bg-sage-50/60 rounded-2xl border border-sage-200/80 flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3 transition-all"
+            >
+              <div className="flex items-center gap-2.5 flex-1 min-w-0">
+                <span className="w-5 text-center text-xs text-sage-400 font-bold shrink-0 hidden sm:inline">
+                  {idx + 1}.
+                </span>
 
-              {/* Seasoning thumbnail / upload button */}
-              <div className="relative shrink-0">
-                {item.image ? (
-                  <div className="relative w-12 h-12 rounded-lg overflow-hidden border border-sage-300">
-                    <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
-                    <button
-                      type="button"
-                      onClick={() => updateSeasoning(idx, 'image', '')}
-                      className="absolute top-0.5 right-0.5 w-4 h-4 bg-black/70 hover:bg-red-600 text-white rounded-full flex items-center justify-center"
+                {/* Seasoning thumbnail / upload button */}
+                <div className="relative shrink-0">
+                  {item.image ? (
+                    <div className="relative w-12 h-12 rounded-xl overflow-hidden border border-sage-300 shadow-2xs">
+                      <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                      <button
+                        type="button"
+                        onClick={() => updateSeasoning(idx, 'image', '')}
+                        className="absolute top-0.5 right-0.5 w-4 h-4 bg-black/70 hover:bg-red-600 text-white rounded-full flex items-center justify-center"
+                        title="Hapus foto bumbu"
+                      >
+                        <X className="w-2.5 h-2.5" />
+                      </button>
+                    </div>
+                  ) : (
+                    <label
+                      className="w-12 h-12 rounded-xl border border-dashed border-sage-300 hover:border-sage-500 bg-white flex flex-col items-center justify-center cursor-pointer transition-colors shadow-2xs"
+                      title="Upload foto bumbu ini"
                     >
-                      <X className="w-2.5 h-2.5" />
-                    </button>
-                  </div>
-                ) : (
-                  <label className="w-12 h-12 rounded-lg border border-dashed border-sage-300 hover:border-sage-500 bg-white flex flex-col items-center justify-center cursor-pointer transition-colors" title="Upload foto bumbu ini">
-                    <ImageIcon className="w-4 h-4 text-sage-400" />
-                    <span className="text-[8px] text-sage-500 font-medium">Foto</span>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      className="hidden"
-                      onChange={(e) => {
-                        const file = e.target.files?.[0];
-                        if (file) handleSeasoningImageUpload(idx, file);
-                      }}
-                    />
-                  </label>
-                )}
+                      <ImageIcon className="w-4 h-4 text-sage-400" />
+                      <span className="text-[8px] text-sage-500 font-medium">Foto</span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) handleSeasoningImageUpload(idx, file);
+                        }}
+                      />
+                    </label>
+                  )}
+                </div>
+
+                {/* Nama Bumbu input */}
+                <input
+                  type="text"
+                  placeholder="Nama Bumbu (misal: Masako, Saus Sambal)"
+                  value={item.name}
+                  onChange={(e) => updateSeasoning(idx, 'name', e.target.value)}
+                  className="flex-1 min-w-0 px-3.5 py-2.5 rounded-xl border border-sage-300 focus:border-sage-500 focus:ring-2 focus:ring-sage-200 outline-none text-sm text-sage-900 bg-white transition-all font-medium"
+                />
               </div>
 
-              <input
-                type="text"
-                placeholder="Nama Bumbu (misal: Masako, Saus Sambal, Lada)"
-                value={item.name}
-                onChange={(e) => updateSeasoning(idx, 'name', e.target.value)}
-                className="flex-[2] w-full sm:w-auto px-3.5 py-2 rounded-xl border border-sage-300 focus:border-sage-500 outline-none text-sm text-sage-900 bg-white"
-              />
-              <input
-                type="text"
-                placeholder="Takaran (misal: 1 sachet, 2 sdm)"
-                value={item.amount || ''}
-                onChange={(e) => updateSeasoning(idx, 'amount', e.target.value)}
-                className="flex-1 w-full sm:w-auto px-3.5 py-2 rounded-xl border border-sage-300 focus:border-sage-500 outline-none text-sm text-sage-900 bg-white"
-              />
-              <button
-                type="button"
-                onClick={() => removeSeasoning(idx)}
-                className="p-2 text-sage-400 hover:text-red-500 transition-colors self-end sm:self-center"
-                title="Hapus baris"
-              >
-                <Trash2 className="w-4 h-4" />
-              </button>
+              {/* Takaran & Hapus button */}
+              <div className="flex items-center gap-2 pl-[58px] sm:pl-0 sm:w-56 shrink-0">
+                <input
+                  type="text"
+                  placeholder="Takaran (misal: 1 sachet, 2 sdm)"
+                  value={item.amount || ''}
+                  onChange={(e) => updateSeasoning(idx, 'amount', e.target.value)}
+                  className="flex-1 min-w-0 px-3.5 py-2.5 rounded-xl border border-sage-300 focus:border-sage-500 focus:ring-2 focus:ring-sage-200 outline-none text-sm text-sage-900 bg-white transition-all"
+                />
+                <button
+                  type="button"
+                  onClick={() => removeSeasoning(idx)}
+                  className="p-2.5 text-sage-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-colors shrink-0"
+                  title="Hapus baris"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
+              </div>
             </div>
           ))}
         </div>
       </div>
 
       {/* 5. Langkah Memasak */}
-      <div className="bg-white p-5 sm:p-7 rounded-2xl border border-sage-200 shadow-sage-sm space-y-4">
-        <div className="flex items-center justify-between border-b border-sage-100 pb-3">
-          <h3 className="font-bold text-sage-900 text-lg flex items-center gap-2">
-            <span className="w-6 h-6 rounded-full bg-sage-200 text-sage-800 text-xs flex items-center justify-center font-bold">
-              5
-            </span>
-            Langkah-Langkah Memasak
-          </h3>
+      <div className="bg-white p-4 sm:p-7 rounded-3xl border border-sage-200 shadow-sage-sm space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 border-b border-sage-100 pb-3">
+          <div className="min-w-0">
+            <h3 className="font-bold text-sage-900 text-base sm:text-lg flex items-center gap-2">
+              <span className="w-6 h-6 rounded-full bg-sage-200 text-sage-800 text-xs flex items-center justify-center font-bold shrink-0">
+                5
+              </span>
+              <span>Langkah-Langkah Memasak</span>
+            </h3>
+            <p className="text-xs text-sage-600 mt-0.5">
+              Urutan cara memasak yang jelas dan mudah dipraktikkan.
+            </p>
+          </div>
           <button
             type="button"
             onClick={addStep}
-            className="px-3 py-1.5 rounded-lg bg-sage-100 hover:bg-sage-200 text-sage-800 text-xs font-semibold flex items-center gap-1.5 transition-colors"
+            className="self-start sm:self-auto shrink-0 px-3.5 py-2 rounded-xl bg-sage-100 hover:bg-sage-200 text-sage-800 text-xs font-bold flex items-center gap-1.5 transition-colors shadow-2xs whitespace-nowrap"
           >
             <Plus className="w-3.5 h-3.5" />
             <span>Tambah Langkah</span>
@@ -695,12 +726,12 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({
                 placeholder={`Langkah ke-${idx + 1}...`}
                 value={step}
                 onChange={(e) => updateStep(idx, e.target.value)}
-                className="flex-1 px-3.5 py-2 rounded-xl border border-sage-300 focus:border-sage-500 outline-none text-sm text-sage-900 transition-all"
+                className="flex-1 min-w-0 px-3.5 py-2.5 rounded-xl border border-sage-300 focus:border-sage-500 focus:ring-2 focus:ring-sage-200 outline-none text-sm text-sage-900 transition-all font-medium"
               />
               <button
                 type="button"
                 onClick={() => removeStep(idx)}
-                className="p-2 text-sage-400 hover:text-red-500 transition-colors mt-2"
+                className="p-2.5 text-sage-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-colors shrink-0 mt-1"
                 title="Hapus langkah"
               >
                 <Trash2 className="w-4 h-4" />
@@ -711,7 +742,7 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({
       </div>
 
       {/* 6. Catatan Koki */}
-      <div className="bg-white p-5 sm:p-7 rounded-2xl border border-sage-200 shadow-sage-sm space-y-3">
+      <div className="bg-white p-4 sm:p-7 rounded-3xl border border-sage-200 shadow-sage-sm space-y-3">
         <h3 className="font-bold text-sage-900 text-base flex items-center gap-2">
           Tips / Catatan Tambahan (Opsional)
         </h3>
@@ -725,19 +756,19 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({
       </div>
 
       {/* Action Buttons */}
-      <div className="flex items-center justify-end gap-3 pt-4">
+      <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-3 pt-4">
         {onCancel && (
           <button
             type="button"
             onClick={onCancel}
-            className="px-6 py-3 rounded-xl border border-sage-300 hover:bg-sage-100 text-sage-700 font-semibold text-sm transition-colors"
+            className="w-full sm:w-auto px-6 py-3 rounded-xl border border-sage-300 hover:bg-sage-100 text-sage-700 font-semibold text-sm transition-colors text-center"
           >
             Batal
           </button>
         )}
         <button
           type="submit"
-          className="px-8 py-3 rounded-xl bg-sage-600 hover:bg-sage-700 text-white font-bold text-sm shadow-sage-md transition-all flex items-center gap-2"
+          className="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-sage-600 hover:bg-sage-700 text-white font-bold text-sm shadow-sage-md transition-all flex items-center justify-center gap-2"
         >
           <Check className="w-4 h-4" />
           <span>Simpan Catatan Menu</span>

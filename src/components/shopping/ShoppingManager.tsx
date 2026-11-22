@@ -202,9 +202,10 @@ export const ShoppingManager: React.FC = () => {
           </select>
           <button
             type="submit"
-            className="sm:col-span-1 px-3 py-2.5 rounded-xl bg-sage-600 hover:bg-sage-700 text-white font-bold text-sm flex items-center justify-center shadow-sm"
+            className="sm:col-span-1 px-4 py-2.5 rounded-xl bg-sage-600 hover:bg-sage-700 text-white font-bold text-sm flex items-center justify-center gap-1.5 shadow-sm"
           >
-            <Plus className="w-5 h-5" />
+            <Plus className="w-5 h-5 shrink-0" />
+            <span className="sm:hidden text-xs font-bold">Tambah ke Daftar</span>
           </button>
         </div>
       </form>

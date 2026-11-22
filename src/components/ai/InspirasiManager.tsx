@@ -257,19 +257,19 @@ export const InspirasiManager: React.FC = () => {
         </div>
 
         <form onSubmit={handleAskAI} className="space-y-3">
-          <div className="relative">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5">
             <input
               type="text"
               required
               placeholder="Contoh: Saya punya tempe, telur puyuh, cabe rawit, bumbu kecap..."
               value={aiPrompt}
               onChange={(e) => setAiPrompt(e.target.value)}
-              className="w-full px-4 py-3.5 rounded-2xl border border-sage-300 focus:border-sage-500 focus:ring-2 focus:ring-sage-200 outline-none text-sm text-sage-900 shadow-sage-sm pr-32"
+              className="flex-1 px-4 py-3.5 rounded-2xl border border-sage-300 focus:border-sage-500 focus:ring-2 focus:ring-sage-200 outline-none text-sm text-sage-900 shadow-sage-sm"
             />
             <button
               type="submit"
               disabled={isAiLoading || !aiPrompt.trim()}
-              className="absolute right-2 top-2 bottom-2 px-5 rounded-xl bg-sage-600 hover:bg-sage-700 text-white font-bold text-xs sm:text-sm flex items-center gap-2 transition-colors disabled:opacity-50 shadow-sm"
+              className="px-6 py-3.5 rounded-2xl bg-sage-600 hover:bg-sage-700 text-white font-bold text-sm flex items-center justify-center gap-2 transition-colors disabled:opacity-50 shadow-sage-sm shrink-0"
             >
               {isAiLoading ? (
                 <>

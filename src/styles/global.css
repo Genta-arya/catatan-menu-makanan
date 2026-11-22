@@ -9,6 +9,11 @@
     --color-sage-border: #DDE5DC;
   }
 
+  html, body {
+    overflow-x: hidden;
+    max-width: 100%;
+  }
+
   body {
     background-color: var(--color-sage-bg);
     color: #243325;

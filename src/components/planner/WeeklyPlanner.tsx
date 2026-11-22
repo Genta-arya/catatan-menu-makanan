@@ -245,9 +245,10 @@ export const WeeklyPlanner: React.FC = () => {
                       <span className="font-semibold text-orange-950 truncate">{pagiRecipe.title}</span>
                       <button
                         onClick={() => handleRemoveRecipe(day.dateStr, 'pagi')}
-                        className="text-orange-400 hover:text-red-500 p-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
+                        className="text-orange-400 hover:text-red-500 p-1 opacity-80 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity"
+                        title="Hapus menu pagi"
                       >
-                        <Trash2 className="w-3 h-3" />
+                        <Trash2 className="w-3.5 h-3.5" />
                       </button>
                     </div>
                   ) : (
@@ -272,9 +273,10 @@ export const WeeklyPlanner: React.FC = () => {
                       <span className="font-semibold text-amber-950 truncate">{siangRecipe.title}</span>
                       <button
                         onClick={() => handleRemoveRecipe(day.dateStr, 'siang')}
-                        className="text-amber-400 hover:text-red-500 p-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
+                        className="text-amber-400 hover:text-red-500 p-1 opacity-80 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity"
+                        title="Hapus menu siang"
                       >
-                        <Trash2 className="w-3 h-3" />
+                        <Trash2 className="w-3.5 h-3.5" />
                       </button>
                     </div>
                   ) : (
@@ -299,9 +301,10 @@ export const WeeklyPlanner: React.FC = () => {
                       <span className="font-semibold text-indigo-950 truncate">{malamRecipe.title}</span>
                       <button
                         onClick={() => handleRemoveRecipe(day.dateStr, 'malam')}
-                        className="text-indigo-400 hover:text-red-500 p-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
+                        className="text-indigo-400 hover:text-red-500 p-1 opacity-80 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity"
+                        title="Hapus menu malam"
                       >
-                        <Trash2 className="w-3 h-3" />
+                        <Trash2 className="w-3.5 h-3.5" />
                       </button>
                     </div>
                   ) : (

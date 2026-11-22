@@ -299,11 +299,11 @@ export const RecipeListManager: React.FC = () => {
         </div>
 
         {/* Sort Select */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 w-full sm:w-auto">
           <select
             value={sortBy}
             onChange={(e: any) => setSortBy(e.target.value)}
-            className="px-3.5 py-2.5 rounded-xl border border-sage-200 bg-white text-xs sm:text-sm font-medium text-sage-800 outline-none focus:border-sage-500 shadow-sage-sm cursor-pointer"
+            className="w-full sm:w-auto px-3.5 py-2.5 rounded-xl border border-sage-200 bg-white text-xs sm:text-sm font-semibold text-sage-800 outline-none focus:border-sage-500 shadow-sage-sm cursor-pointer"
           >
             <option value="newest">Terbaru Ditambahkan</option>
             <option value="az">Nama A - Z</option>
