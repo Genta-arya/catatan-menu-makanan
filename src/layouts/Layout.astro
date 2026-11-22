@@ -1,0 +1,62 @@
+---
+import '../styles/global.css';
+import { Navbar } from '../components/layout/Navbar';
+import { BottomNav } from '../components/layout/BottomNav';
+
+interface Props {
+  title?: string;
+  description?: string;
+  currentPath?: string;
+}
+
+const {
+  title = 'DapurSage - Catatan Menu Makanan & Meal Planner',
+  description = 'Aplikasi catatan menu makanan cerdas dengan kategori waktu makan, pemisah bahan & bumbu, kalkulator porsi, dan AI 9Router.',
+  currentPath = Astro.url.pathname,
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="id" class="h-full bg-sage-50 text-sage-900 scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#52796f" />
+
+    <!-- Google Fonts: Plus Jakarta Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="min-h-screen flex flex-col font-sans bg-sage-50 antialiased pb-20 md:pb-8">
+    <!-- Desktop & Mobile Top Header Navbar -->
+    <Navbar client:load currentPath={currentPath} />
+
+    <!-- Main App Content -->
+    <main class="flex-1 w-full max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
+      <slot />
+    </main>
+
+    <!-- Mobile Fixed Bottom Navigation Bar -->
+    <BottomNav client:load currentPath={currentPath} />
+
+    <!-- Simple Footer for Desktop -->
+    <footer class="hidden md:block border-t border-sage-200/80 bg-white/60 py-6 text-center text-xs text-sage-500 font-medium">
+      <div class="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
+        <p>© 2026 DapurSage • Dibuat dengan cinta & kelezatan rasa.</p>
+        <p class="flex items-center gap-1.5 text-sage-600">
+          <span>Didukung oleh AI 9Router</span>
+          <span class="w-1.5 h-1.5 rounded-full bg-sage-500"></span>
+          <span>Astro.js & Tailwind CSS</span>
+        </p>
+      </div>
+    </footer>
+  </body>
+</html>

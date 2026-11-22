@@ -1,0 +1,56 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --color-sage-bg: #F7FAF7;
+    --color-sage-surface: #FFFFFF;
+    --color-sage-border: #DDE5DC;
+  }
+
+  body {
+    background-color: var(--color-sage-bg);
+    color: #243325;
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+/* Custom Sage Glassmorphism & Cards */
+.sage-card {
+  background: #ffffff;
+  border: 1px solid #E1EAE1;
+  border-radius: 1rem;
+  box-shadow: 0 2px 8px rgba(44, 58, 45, 0.04);
+  transition: all 0.2s ease-in-out;
+}
+
+.sage-card:hover {
+  border-color: #B2CCB3;
+  box-shadow: 0 6px 16px rgba(44, 58, 45, 0.08);
+}
+
+.sage-glass {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(207, 221, 208, 0.6);
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #F0F4F0;
+}
+::-webkit-scrollbar-thumb {
+  background: #A9C2AA;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #84A586;
+}

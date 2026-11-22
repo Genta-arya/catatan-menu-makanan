@@ -1,0 +1,12 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { ShoppingManager } from '../components/shopping/ShoppingManager';
+---
+
+<Layout
+  title="Daftar Belanja Pasar & Supermarket - DapurSage"
+  description="Daftar belanja bahan makanan dan bumbu dapur terpisah rapi dengan fitur checklist dan ekspor ke WhatsApp."
+  currentPath="/belanja"
+>
+  <ShoppingManager client:load />
+</Layout>

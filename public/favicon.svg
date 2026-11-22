@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none">
+  <rect width="100" height="100" rx="28" fill="#52796F"/>
+  <circle cx="50" cy="50" r="34" stroke="#84A98C" stroke-width="4" stroke-dasharray="6 6" fill="#354F52"/>
+  <!-- Utensils & Leaf Icon -->
+  <path d="M42 32v20c0 4 3 7 7 7s7-3 7-7V32" stroke="#CAD2C5" stroke-width="4" stroke-linecap="round"/>
+  <path d="M49 59v15" stroke="#CAD2C5" stroke-width="4" stroke-linecap="round"/>
+  <path d="M44 32v10M54 32v10" stroke="#CAD2C5" stroke-width="3" stroke-linecap="round"/>
+  <!-- Leaf Sparkle -->
+  <path d="M62 30c5 0 9 4 9 9 0 5-4 9-9 9 0-5 0-9-9-9 0-5 4-9 9-9z" fill="#84A98C"/>
+</svg>
