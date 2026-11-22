@@ -225,45 +225,50 @@ export const ShoppingManager: React.FC = () => {
               <div
                 key={item.id}
                 onClick={() => handleToggle(item.id)}
-                className={`p-3 rounded-xl border transition-all cursor-pointer flex items-center justify-between gap-3 ${
+                className={`p-3 rounded-2xl border transition-all cursor-pointer flex items-start gap-3 ${
                   item.isChecked
                     ? 'bg-sage-50/70 border-sage-200 opacity-60 text-sage-400'
-                    : 'bg-white border-sage-200 hover:border-sage-400 text-sage-900 shadow-sm'
+                    : 'bg-white border-sage-200 hover:border-sage-400 text-sage-900 shadow-xs'
                 }`}
               >
-                <div className="flex items-center gap-3">
+                <div className="pt-0.5 shrink-0">
                   {item.isChecked ? (
-                    <CheckCircle2 className="w-5 h-5 text-sage-600 shrink-0" />
+                    <CheckCircle2 className="w-5 h-5 text-sage-600" />
                   ) : (
-                    <Circle className="w-5 h-5 text-sage-300 shrink-0" />
+                    <Circle className="w-5 h-5 text-sage-300" />
                   )}
-                  <div>
-                    <span className={`text-sm font-medium ${item.isChecked ? 'line-through' : ''}`}>
+                </div>
+
+                <div className="flex-1 min-w-0 flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
+                  <div className="min-w-0 pr-1">
+                    <span className={`text-sm font-medium break-words ${item.isChecked ? 'line-through' : ''}`}>
                       {item.name}
                     </span>
                     {item.sourceRecipeTitle && (
-                      <span className="text-[10px] text-sage-400 block">
+                      <span className="text-[10px] text-sage-400 block break-words mt-0.5">
                         Dari: {item.sourceRecipeTitle}
                       </span>
                     )}
                   </div>
-                </div>
 
-                <div className="flex items-center gap-2">
-                  {item.amount && (
-                    <span className="text-xs font-semibold px-2 py-0.5 rounded-md bg-sage-100 text-sage-800">
-                      {item.amount}
-                    </span>
-                  )}
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleDeleteItem(item.id);
-                    }}
-                    className="p-1 text-sage-400 hover:text-red-500 transition-colors"
-                  >
-                    <Trash2 className="w-3.5 h-3.5" />
-                  </button>
+                  <div className="flex items-center gap-2 shrink-0">
+                    {item.amount && (
+                      <span className="text-xs font-semibold px-2 py-0.5 rounded-md bg-sage-100 text-sage-800 break-words max-w-full">
+                        {item.amount}
+                      </span>
+                    )}
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDeleteItem(item.id);
+                      }}
+                      className="p-1 text-sage-400 hover:text-red-500 transition-colors cursor-pointer"
+                      title="Hapus dari daftar belanja"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
                 </div>
               </div>
             ))}
@@ -286,45 +291,50 @@ export const ShoppingManager: React.FC = () => {
               <div
                 key={item.id}
                 onClick={() => handleToggle(item.id)}
-                className={`p-3 rounded-xl border transition-all cursor-pointer flex items-center justify-between gap-3 ${
+                className={`p-3 rounded-2xl border transition-all cursor-pointer flex items-start gap-3 ${
                   item.isChecked
                     ? 'bg-sage-50/70 border-sage-200 opacity-60 text-sage-400'
-                    : 'bg-white border-sage-200 hover:border-amber-400 text-sage-900 shadow-sm'
+                    : 'bg-white border-sage-200 hover:border-amber-400 text-sage-900 shadow-xs'
                 }`}
               >
-                <div className="flex items-center gap-3">
+                <div className="pt-0.5 shrink-0">
                   {item.isChecked ? (
-                    <CheckCircle2 className="w-5 h-5 text-amber-600 shrink-0" />
+                    <CheckCircle2 className="w-5 h-5 text-amber-600" />
                   ) : (
-                    <Circle className="w-5 h-5 text-sage-300 shrink-0" />
+                    <Circle className="w-5 h-5 text-sage-300" />
                   )}
-                  <div>
-                    <span className={`text-sm font-medium ${item.isChecked ? 'line-through' : ''}`}>
+                </div>
+
+                <div className="flex-1 min-w-0 flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
+                  <div className="min-w-0 pr-1">
+                    <span className={`text-sm font-medium break-words ${item.isChecked ? 'line-through' : ''}`}>
                       {item.name}
                     </span>
                     {item.sourceRecipeTitle && (
-                      <span className="text-[10px] text-sage-400 block">
+                      <span className="text-[10px] text-sage-400 block break-words mt-0.5">
                         Dari: {item.sourceRecipeTitle}
                       </span>
                     )}
                   </div>
-                </div>
 
-                <div className="flex items-center gap-2">
-                  {item.amount && (
-                    <span className="text-xs font-semibold px-2 py-0.5 rounded-md bg-amber-50 text-amber-800 border border-amber-200">
-                      {item.amount}
-                    </span>
-                  )}
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleDeleteItem(item.id);
-                    }}
-                    className="p-1 text-sage-400 hover:text-red-500 transition-colors"
-                  >
-                    <Trash2 className="w-3.5 h-3.5" />
-                  </button>
+                  <div className="flex items-center gap-2 shrink-0">
+                    {item.amount && (
+                      <span className="text-xs font-semibold px-2 py-0.5 rounded-md bg-amber-50 text-amber-800 border border-amber-200 break-words max-w-full">
+                        {item.amount}
+                      </span>
+                    )}
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDeleteItem(item.id);
+                      }}
+                      className="p-1 text-sage-400 hover:text-red-500 transition-colors cursor-pointer"
+                      title="Hapus dari daftar belanja"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
                 </div>
               </div>
             ))}

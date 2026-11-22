@@ -323,9 +323,9 @@ export const InspirasiManager: React.FC = () => {
                 </h4>
                 <ul className="text-xs text-sage-700 space-y-1.5">
                   {aiDishIdea.ingredients?.map((ing: any, i: number) => (
-                    <li key={i} className="flex justify-between items-center gap-2">
-                      <span className="font-medium">• {ing.name}</span>
-                      <span className="text-sage-500 text-[11px] shrink-0">{ing.amount}</span>
+                    <li key={i} className="flex flex-wrap justify-between items-baseline gap-x-2 gap-y-1">
+                      <span className="font-medium break-words">• {ing.name}</span>
+                      <span className="text-sage-500 text-[11px] shrink-0 break-words">{ing.amount}</span>
                     </li>
                   ))}
                 </ul>
@@ -338,9 +338,9 @@ export const InspirasiManager: React.FC = () => {
                 </h4>
                 <ul className="text-xs text-sage-700 space-y-1.5">
                   {aiDishIdea.seasonings?.map((sea: any, i: number) => (
-                    <li key={i} className="flex justify-between items-center gap-2">
-                      <span className="font-medium">• {sea.name}</span>
-                      <span className="text-sage-500 text-[11px] shrink-0">{sea.amount}</span>
+                    <li key={i} className="flex flex-wrap justify-between items-baseline gap-x-2 gap-y-1">
+                      <span className="font-medium break-words">• {sea.name}</span>
+                      <span className="text-sage-500 text-[11px] shrink-0 break-words">{sea.amount}</span>
                     </li>
                   ))}
                 </ul>

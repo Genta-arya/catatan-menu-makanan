@@ -361,25 +361,39 @@ export const RecipeDetail: React.FC<RecipeDetailProps> = ({
                 <div
                   key={ing.id}
                   onClick={() => toggleIngredient(ing.id)}
-                  className={`p-3 rounded-xl border transition-all cursor-pointer flex items-center justify-between gap-3 ${
+                  className={`p-3 sm:p-3.5 rounded-2xl border transition-all cursor-pointer flex items-start gap-3 ${
                     isChecked
-                      ? 'bg-sage-50 border-sage-200 opacity-60 line-through text-sage-400'
-                      : 'bg-white border-sage-200 hover:border-sage-300 text-sage-900 shadow-sm'
+                      ? 'bg-sage-50/80 border-sage-200 opacity-60 text-sage-400'
+                      : 'bg-white border-sage-200 hover:border-sage-300 text-sage-900 shadow-xs hover:shadow-sm'
                   }`}
                 >
-                  <div className="flex items-center gap-3">
+                  <div className="pt-0.5 shrink-0 text-sage-400">
                     {isChecked ? (
-                      <CheckCircle2 className="w-4 h-4 text-sage-600 shrink-0" />
+                      <CheckCircle2 className="w-4 h-4 text-sage-600" />
                     ) : (
-                      <Circle className="w-4 h-4 text-sage-300 shrink-0" />
+                      <Circle className="w-4 h-4 text-sage-300" />
                     )}
-                    <span className="font-medium text-sm">{ing.name}</span>
                   </div>
-                  {ing.amount && (
-                    <span className="text-xs font-semibold px-2 py-0.5 rounded-md bg-sage-100 text-sage-800 shrink-0">
-                      {ing.amount}
+                  <div className="flex-1 min-w-0 flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1.5">
+                    <span
+                      className={`font-medium text-sm leading-snug break-words ${
+                        isChecked ? 'line-through text-sage-400' : 'text-sage-900'
+                      }`}
+                    >
+                      {ing.name}
                     </span>
-                  )}
+                    {ing.amount && (
+                      <span
+                        className={`text-xs font-semibold px-2.5 py-0.5 rounded-md leading-relaxed break-words max-w-full transition-colors ${
+                          isChecked
+                            ? 'bg-sage-100/60 text-sage-500'
+                            : 'bg-sage-100 text-sage-800 border border-sage-200/50'
+                        }`}
+                      >
+                        {ing.amount}
+                      </span>
+                    )}
+                  </div>
                 </div>
               );
             })}
@@ -403,46 +417,61 @@ export const RecipeDetail: React.FC<RecipeDetailProps> = ({
                 <div
                   key={sea.id}
                   onClick={() => toggleIngredient(sea.id)}
-                  className={`p-2.5 rounded-xl border transition-all cursor-pointer flex items-center justify-between gap-3 ${
+                  className={`p-2.5 sm:p-3 rounded-2xl border transition-all cursor-pointer flex items-start gap-2.5 sm:gap-3 ${
                     isChecked
-                      ? 'bg-sage-50 border-sage-200 opacity-60 line-through text-sage-400'
-                      : 'bg-white border-sage-200 hover:border-sage-300 text-sage-900 shadow-sm'
+                      ? 'bg-sage-50/80 border-sage-200 opacity-60 text-sage-400'
+                      : 'bg-white border-sage-200 hover:border-sage-300 text-sage-900 shadow-xs hover:shadow-sm'
                   }`}
                 >
-                  <div className="flex items-center gap-2.5">
-                    {/* Bumbu Photo Thumbnail */}
-                    {sea.image ? (
-                      <img
-                        src={sea.image}
-                        alt={sea.name}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setBumbuLightbox({ image: sea.image!, name: sea.name });
-                        }}
-                        className="w-10 h-10 rounded-lg object-cover border border-sage-200 shrink-0 cursor-zoom-in hover:scale-105 hover:border-sage-400 transition-all shadow-2xs"
-                        title="Klik untuk memperbesar foto bumbu"
-                      />
-                    ) : (
-                      <div className="w-10 h-10 rounded-lg bg-amber-50 border border-amber-200 text-amber-700 flex items-center justify-center shrink-0">
-                        <Sparkles className="w-4 h-4" />
-                      </div>
-                    )}
-
-                    <div className="flex items-center gap-2">
-                      {isChecked ? (
-                        <CheckCircle2 className="w-4 h-4 text-sage-600 shrink-0" />
-                      ) : (
-                        <Circle className="w-4 h-4 text-sage-300 shrink-0" />
-                      )}
-                      <span className="font-medium text-sm">{sea.name}</span>
+                  {/* Bumbu Photo Thumbnail */}
+                  {sea.image ? (
+                    <img
+                      src={sea.image}
+                      alt={sea.name}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setBumbuLightbox({ image: sea.image!, name: sea.name });
+                      }}
+                      className="w-10 h-10 rounded-xl object-cover border border-sage-200 shrink-0 cursor-zoom-in hover:scale-105 hover:border-sage-400 transition-all shadow-2xs mt-0.5"
+                      title="Klik untuk memperbesar foto bumbu"
+                    />
+                  ) : (
+                    <div className="w-10 h-10 rounded-xl bg-amber-50 border border-amber-200 text-amber-700 flex items-center justify-center shrink-0 mt-0.5">
+                      <Sparkles className="w-4 h-4" />
                     </div>
+                  )}
+
+                  {/* Circle Checkbox */}
+                  <div className="pt-1 shrink-0 text-sage-400">
+                    {isChecked ? (
+                      <CheckCircle2 className="w-4 h-4 text-sage-600" />
+                    ) : (
+                      <Circle className="w-4 h-4 text-sage-300" />
+                    )}
                   </div>
 
-                  {sea.amount && (
-                    <span className="text-xs font-semibold px-2 py-0.5 rounded-md bg-amber-50 text-amber-900 border border-amber-200 shrink-0">
-                      {sea.amount}
+                  {/* Text Container: Name & Amount */}
+                  <div className="flex-1 min-w-0 flex flex-wrap items-baseline justify-between gap-x-2.5 gap-y-1.5">
+                    <span
+                      className={`font-medium text-sm leading-snug break-words ${
+                        isChecked ? 'line-through text-sage-400' : 'text-sage-900'
+                      }`}
+                    >
+                      {sea.name}
                     </span>
-                  )}
+
+                    {sea.amount && (
+                      <span
+                        className={`text-xs font-semibold px-2.5 py-0.5 rounded-md leading-relaxed break-words max-w-full transition-colors ${
+                          isChecked
+                            ? 'bg-amber-100/50 text-amber-600 border border-amber-200/50'
+                            : 'bg-amber-50 text-amber-900 border border-amber-200'
+                        }`}
+                      >
+                        {sea.amount}
+                      </span>
+                    )}
+                  </div>
                 </div>
               );
             })}
@@ -599,7 +628,7 @@ export const RecipeDetail: React.FC<RecipeDetailProps> = ({
                 </span>
 
                 <p
-                  className={`text-sm leading-relaxed ${
+                  className={`text-sm leading-relaxed flex-1 min-w-0 break-words ${
                     isDone ? 'line-through text-sage-400' : 'text-sage-800'
                   }`}
                 >
@@ -618,7 +647,7 @@ export const RecipeDetail: React.FC<RecipeDetailProps> = ({
             <Sparkles className="w-4 h-4 text-sage-600" />
             Tips dari Koki
           </h4>
-          <p className="text-sage-700 text-sm leading-relaxed">
+          <p className="text-sage-700 text-sm leading-relaxed break-words">
             {recipe.notes}
           </p>
         </div>

@@ -771,7 +771,7 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({
                 />
               </div>
 
-              <div className="flex items-center gap-2 pl-7 sm:pl-0 sm:w-56 shrink-0">
+              <div className="flex items-center gap-2 pl-7 sm:pl-0 sm:w-60 md:w-72 shrink-0">
                 <input
                   type="text"
                   placeholder="Takaran (misal: 15 butir)"
@@ -873,7 +873,7 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({
               </div>
 
               {/* Takaran & Hapus button */}
-              <div className="flex items-center gap-2 pl-[58px] sm:pl-0 sm:w-56 shrink-0">
+              <div className="flex items-center gap-2 pl-[58px] sm:pl-0 sm:w-60 md:w-72 shrink-0">
                 <input
                   type="text"
                   placeholder="Takaran (misal: 1 sachet, 2 sdm)"
