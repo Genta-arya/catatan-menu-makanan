@@ -203,34 +203,18 @@ export const RecipeListManager: React.FC = () => {
             Catatan Menu Masakan
           </h1>
           <p className="text-sage-600 text-xs sm:text-sm mt-1">
-            Daftar global semua ide resep, terstruktur dengan bahan, bumbu & waktu makan.
+            Daftar semua ide resep, terstruktur dengan bahan, bumbu & waktu makan.
           </p>
         </div>
 
         <div className="flex items-center gap-2 w-full sm:w-auto">
           <button
             onClick={() => setViewState('create')}
-            className="flex-1 sm:flex-none px-4 py-2.5 rounded-xl bg-sage-600 hover:bg-sage-700 text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-sage-md transition-all"
+            className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-sage-600 hover:bg-sage-700 text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-sage-md transition-all"
           >
             <Plus className="w-4 h-4" />
             <span>Tambah Menu</span>
           </button>
-
-          <button
-            onClick={handleExport}
-            title="Backup Data ke JSON"
-            className="p-2.5 rounded-xl bg-white hover:bg-sage-100 border border-sage-200 text-sage-700 shadow-sage-sm transition-colors"
-          >
-            <Download className="w-4 h-4" />
-          </button>
-
-          <label
-            title="Restore Data dari JSON"
-            className="p-2.5 rounded-xl bg-white hover:bg-sage-100 border border-sage-200 text-sage-700 shadow-sage-sm transition-colors cursor-pointer"
-          >
-            <Upload className="w-4 h-4" />
-            <input type="file" accept=".json" onChange={handleImport} className="hidden" />
-          </label>
         </div>
       </div>
 
@@ -244,7 +228,7 @@ export const RecipeListManager: React.FC = () => {
               : 'text-sage-600 hover:text-sage-900'
           }`}
         >
-          <span>Semua Menu</span>
+          <span>Semua</span>
           <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-sage-200 text-sage-800">
             {recipes.length}
           </span>
