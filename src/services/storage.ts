@@ -6,13 +6,16 @@ const MEAL_PLANS_KEY = 'menu_makanan_mealplans';
 const SHOPPING_KEY = 'menu_makanan_shopping';
 const AI_SETTINGS_KEY = 'menu_makanan_ai_settings';
 
+// VPS MySQL API Endpoint
+export const VPS_API_BASE = 'https://router.mgentaarya.my.id/api/menu';
+
 export const DEFAULT_AI_SETTINGS: AISettings = {
   baseUrl: 'https://router.mgentaarya.my.id/v1',
   apiKey: 'sk-e9a813ca4d8d749d-3buibr-909d375d',
-  model: 'kc/nvidia/nemotron-3-ultra-550b-a55b:free',
+  model: 'CODING-FREE',
 };
 
-// Initial Indonesian Home Dishes (Including user's recipe: Oseng Tempe Puyuh)
+// Initial Indonesian Home Dishes (Preloaded in VPS MySQL)
 export const INITIAL_RECIPES: Recipe[] = [
   {
     id: 'resep-oseng-tempe-puyuh',
@@ -163,15 +166,52 @@ async function setStorageItem<T>(key: string, value: T): Promise<void> {
   }
 
   try {
-    // Also save light version to localStorage for quick hydration
     localStorage.setItem(key, JSON.stringify(value));
   } catch {
     /* ignore quota exceptions */
   }
 }
 
-// Recipes CRUD
+// Check VPS MySQL database health
+export async function checkVpsDbStatus(): Promise<{ connected: boolean; message: string }> {
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 4000);
+    const res = await fetch(`${VPS_API_BASE}/health`, { signal: controller.signal });
+    clearTimeout(timeout);
+    if (res.ok) {
+      const data = await res.json();
+      return { connected: true, message: `MySQL VPS Aktif (${data.database})` };
+    }
+    return { connected: false, message: `Server error (${res.status})` };
+  } catch (err: any) {
+    return { connected: false, message: 'Offline / Mode Lokal' };
+  }
+}
+
+// Recipes CRUD with VPS MySQL sync
 export async function getRecipes(): Promise<Recipe[]> {
+  // 1. Try fetching live from VPS MySQL first
+  try {
+    if (typeof window !== 'undefined') {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 3500);
+      const res = await fetch(`${VPS_API_BASE}/recipes`, { signal: controller.signal });
+      clearTimeout(timeout);
+      if (res.ok) {
+        const json = await res.json();
+        if (json.success && Array.isArray(json.data) && json.data.length > 0) {
+          // Cache to IDB
+          await setStorageItem(RECIPES_KEY, json.data);
+          return json.data;
+        }
+      }
+    }
+  } catch {
+    // Silently fall back to cached local storage
+  }
+
+  // 2. Fall back to local IndexedDB
   const recipes = await getStorageItem<Recipe[]>(RECIPES_KEY, []);
   if (recipes.length === 0) {
     await setStorageItem(RECIPES_KEY, INITIAL_RECIPES);
@@ -190,27 +230,76 @@ export async function saveRecipe(recipe: Recipe): Promise<void> {
   const index = recipes.findIndex((r) => r.id === recipe.id);
   const now = new Date().toISOString();
 
+  let updatedRecipe: Recipe;
   if (index >= 0) {
-    recipes[index] = { ...recipe, updatedAt: now };
+    updatedRecipe = { ...recipe, updatedAt: now };
+    recipes[index] = updatedRecipe;
   } else {
-    recipes.unshift({
+    updatedRecipe = {
       ...recipe,
       createdAt: recipe.createdAt || now,
       updatedAt: now,
-    });
+    };
+    recipes.unshift(updatedRecipe);
   }
 
+  // Save to local cache
   await setStorageItem(RECIPES_KEY, recipes);
+
+  // Sync to VPS MySQL asynchronously
+  try {
+    fetch(`${VPS_API_BASE}/recipes`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(updatedRecipe),
+    }).catch((err) => console.warn('Sync to VPS MySQL failed:', err));
+  } catch (e) {
+    console.warn('Sync recipe error:', e);
+  }
 }
 
 export async function deleteRecipe(id: string): Promise<void> {
   const recipes = await getRecipes();
   const filtered = recipes.filter((r) => r.id !== id);
   await setStorageItem(RECIPES_KEY, filtered);
+
+  // Sync delete to VPS MySQL
+  try {
+    fetch(`${VPS_API_BASE}/recipes/${id}`, {
+      method: 'DELETE',
+    }).catch((err) => console.warn('Sync delete to VPS MySQL failed:', err));
+  } catch (e) {
+    console.warn('Sync delete recipe error:', e);
+  }
 }
 
 // Meal Plans
 export async function getMealPlans(): Promise<Record<string, MealPlanDay>> {
+  // Try fetching from VPS
+  try {
+    if (typeof window !== 'undefined') {
+      const res = await fetch(`${VPS_API_BASE}/meal-plans`);
+      if (res.ok) {
+        const json = await res.json();
+        if (json.success && Array.isArray(json.data) && json.data.length > 0) {
+          const map: Record<string, MealPlanDay> = {};
+          json.data.forEach((p: any) => {
+            map[p.day] = {
+              date: p.day,
+              dayName: p.dayName,
+              meals: p.meals || {},
+              notes: p.notes,
+            };
+          });
+          await setStorageItem(MEAL_PLANS_KEY, map);
+          return map;
+        }
+      }
+    }
+  } catch {
+    /* fallback to local */
+  }
+
   return await getStorageItem<Record<string, MealPlanDay>>(MEAL_PLANS_KEY, {});
 }
 
@@ -218,15 +307,58 @@ export async function saveMealPlan(plan: MealPlanDay): Promise<void> {
   const plans = await getMealPlans();
   plans[plan.date] = plan;
   await setStorageItem(MEAL_PLANS_KEY, plans);
+
+  // Sync to VPS MySQL
+  try {
+    const list = Object.values(plans).map((p) => ({
+      day: p.date,
+      dayName: p.dayName,
+      meals: p.meals,
+      notes: p.notes,
+    }));
+    fetch(`${VPS_API_BASE}/meal-plans`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(list),
+    }).catch(() => {});
+  } catch {
+    /* ignore */
+  }
 }
 
 // Shopping List
 export async function getShoppingList(): Promise<ShoppingItem[]> {
+  try {
+    if (typeof window !== 'undefined') {
+      const res = await fetch(`${VPS_API_BASE}/shopping`);
+      if (res.ok) {
+        const json = await res.json();
+        if (json.success && Array.isArray(json.data) && json.data.length > 0) {
+          await setStorageItem(SHOPPING_KEY, json.data);
+          return json.data;
+        }
+      }
+    }
+  } catch {
+    /* fallback to local */
+  }
+
   return await getStorageItem<ShoppingItem[]>(SHOPPING_KEY, []);
 }
 
 export async function saveShoppingList(items: ShoppingItem[]): Promise<void> {
   await setStorageItem(SHOPPING_KEY, items);
+
+  // Sync to VPS MySQL
+  try {
+    fetch(`${VPS_API_BASE}/shopping`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(items),
+    }).catch(() => {});
+  } catch {
+    /* ignore */
+  }
 }
 
 // AI Settings
@@ -249,8 +381,9 @@ export async function exportAllData(): Promise<string> {
 
   const payload = {
     appName: 'Catatan Menu Makanan',
+    database: 'MySQL 51.79.152.173 (db_catatan_menu)',
     exportedAt: new Date().toISOString(),
-    version: '1.0',
+    version: '2.0',
     data: { recipes, mealPlans, shopping, aiSettings },
   };
 
@@ -264,12 +397,25 @@ export async function importAllData(jsonStr: string): Promise<boolean> {
 
     if (Array.isArray(parsed.data.recipes)) {
       await setStorageItem(RECIPES_KEY, parsed.data.recipes);
+      // Push each recipe to VPS MySQL
+      parsed.data.recipes.forEach((r: Recipe) => {
+        fetch(`${VPS_API_BASE}/recipes`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(r),
+        }).catch(() => {});
+      });
     }
     if (parsed.data.mealPlans) {
       await setStorageItem(MEAL_PLANS_KEY, parsed.data.mealPlans);
     }
     if (Array.isArray(parsed.data.shopping)) {
       await setStorageItem(SHOPPING_KEY, parsed.data.shopping);
+      fetch(`${VPS_API_BASE}/shopping`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(parsed.data.shopping),
+      }).catch(() => {});
     }
     if (parsed.data.aiSettings) {
       await setStorageItem(AI_SETTINGS_KEY, parsed.data.aiSettings);

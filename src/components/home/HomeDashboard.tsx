@@ -51,9 +51,15 @@ export const HomeDashboard: React.FC = () => {
         <div className="absolute -bottom-16 -left-16 w-64 h-64 bg-sage-900/30 rounded-full blur-2xl pointer-events-none" />
 
         <div className="relative z-10 max-w-2xl space-y-3 sm:space-y-4">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/15 backdrop-blur-md text-xs font-semibold text-sage-100 border border-white/20">
-            <Sparkles className="w-3.5 h-3.5 text-sage-200" />
-            <span>Asisten Catatan Menu Makanan & AI</span>
+          <div className="flex flex-wrap items-center gap-2">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/15 backdrop-blur-md text-xs font-semibold text-sage-100 border border-white/20">
+              <Sparkles className="w-3.5 h-3.5 text-sage-200" />
+              <span>AI Combo: CODING-FREE</span>
+            </div>
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/20 backdrop-blur-md text-xs font-semibold text-emerald-100 border border-emerald-400/30">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+              <span>Database: MySQL VPS (Active)</span>
+            </div>
           </div>
 
           <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight leading-tight">

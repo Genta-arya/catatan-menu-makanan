@@ -51,10 +51,11 @@ async function call9RouterChat(messages: Array<{ role: string; content: string }
   const url = `${settings.baseUrl.replace(/\/+$/, '')}/chat/completions`;
 
   const payload = {
-    model: settings.model || 'kc/nvidia/nemotron-3-ultra-550b-a55b:free',
+    model: settings.model || 'CODING-FREE',
     messages,
     max_tokens: maxTokens,
     temperature: 0.7,
+    stream: false,
   };
 
   const response = await fetch(url, {
@@ -72,12 +73,31 @@ async function call9RouterChat(messages: Array<{ role: string; content: string }
   }
 
   const rawText = await response.text();
-  // Strip trailing data: [DONE] if 9router proxy appends it
-  const jsonPart = rawText.replace(/data:\s*\[DONE\][\s\S]*$/, '').trim();
 
-  let data;
+  // 1. Check if response is Server-Sent Events (SSE) format
+  if (rawText.includes('data: ') && (rawText.includes('"delta"') || rawText.includes('[DONE]'))) {
+    let accumulated = '';
+    const lines = rawText.split('\n');
+    for (const line of lines) {
+      const trimmed = line.trim();
+      if (!trimmed.startsWith('data:')) continue;
+      const jsonStr = trimmed.replace(/^data:\s*/, '').trim();
+      if (jsonStr === '[DONE]') continue;
+      try {
+        const chunk = JSON.parse(jsonStr);
+        const delta = chunk.choices?.[0]?.delta;
+        if (delta?.content) accumulated += delta.content;
+      } catch {
+        /* skip invalid chunk */
+      }
+    }
+    if (accumulated.trim()) return accumulated;
+  }
+
+  // 2. Standard JSON response
+  let data: any;
   try {
-    data = JSON.parse(jsonPart);
+    data = JSON.parse(rawText);
   } catch {
     const start = rawText.indexOf('{');
     const end = rawText.lastIndexOf('}');
