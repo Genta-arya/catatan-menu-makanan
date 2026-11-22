@@ -575,11 +575,22 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({
             Deskripsi Singkat
           </label>
           <textarea
+            ref={(el) => {
+              if (el) {
+                el.style.height = 'auto';
+                el.style.height = `${Math.max(el.scrollHeight, 68)}px`;
+              }
+            }}
             rows={2}
             placeholder="Ceritakan keistimewaan rasa masakan ini..."
             value={description}
+            onInput={(e) => {
+              const target = e.currentTarget;
+              target.style.height = 'auto';
+              target.style.height = `${Math.max(target.scrollHeight, 68)}px`;
+            }}
             onChange={(e) => setDescription(e.target.value)}
-            className="w-full px-4 py-2.5 rounded-xl border border-sage-300 focus:border-sage-500 focus:ring-2 focus:ring-sage-200 outline-none text-sage-900 text-sm transition-all"
+            className="w-full px-4 py-2.5 rounded-xl border border-sage-300 focus:border-sage-500 focus:ring-2 focus:ring-sage-200 outline-none text-sage-900 text-sm transition-all resize-none overflow-hidden"
           />
         </div>
       </div>
@@ -941,11 +952,22 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({
                 {idx + 1}
               </span>
               <textarea
-                rows={2}
+                ref={(el) => {
+                  if (el) {
+                    el.style.height = 'auto';
+                    el.style.height = `${Math.max(el.scrollHeight, 56)}px`;
+                  }
+                }}
+                rows={1}
                 placeholder={`Langkah ke-${idx + 1}...`}
                 value={step}
+                onInput={(e) => {
+                  const target = e.currentTarget;
+                  target.style.height = 'auto';
+                  target.style.height = `${Math.max(target.scrollHeight, 56)}px`;
+                }}
                 onChange={(e) => updateStep(idx, e.target.value)}
-                className="flex-1 min-w-0 px-3.5 py-2.5 rounded-xl border border-sage-300 focus:border-sage-500 focus:ring-2 focus:ring-sage-200 outline-none text-sm text-sage-900 transition-all font-medium"
+                className="flex-1 min-w-0 px-3.5 py-2.5 rounded-xl border border-sage-300 focus:border-sage-500 focus:ring-2 focus:ring-sage-200 outline-none text-sm text-sage-900 transition-all font-medium resize-none overflow-hidden"
               />
               <button
                 type="button"
@@ -966,11 +988,22 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({
           Tips / Catatan Tambahan (Opsional)
         </h3>
         <textarea
+          ref={(el) => {
+            if (el) {
+              el.style.height = 'auto';
+              el.style.height = `${Math.max(el.scrollHeight, 68)}px`;
+            }
+          }}
           rows={2}
           placeholder="Misal: Tambahkan petai atau buncis untuk sensasi renyah..."
           value={notes}
+          onInput={(e) => {
+            const target = e.currentTarget;
+            target.style.height = 'auto';
+            target.style.height = `${Math.max(target.scrollHeight, 68)}px`;
+          }}
           onChange={(e) => setNotes(e.target.value)}
-          className="w-full px-4 py-2.5 rounded-xl border border-sage-300 focus:border-sage-500 outline-none text-sm text-sage-900"
+          className="w-full px-4 py-2.5 rounded-xl border border-sage-300 focus:border-sage-500 outline-none text-sm text-sage-900 resize-none overflow-hidden"
         />
       </div>
 
