@@ -41,6 +41,8 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({
   const [title, setTitle] = useState(initialRecipe?.title || '');
   const [description, setDescription] = useState(initialRecipe?.description || '');
   const [category, setCategory] = useState(initialRecipe?.category || 'Tumisan');
+  const isInitialPreset = (CATEGORY_PRESETS as readonly string[]).includes(initialRecipe?.category || 'Tumisan');
+  const [isCustomCategory, setIsCustomCategory] = useState(!isInitialPreset && !!initialRecipe?.category);
   const [mealTypes, setMealTypes] = useState<MealType[]>(
     initialRecipe?.mealTypes || ['siang']
   );
@@ -188,7 +190,9 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({
     try {
       const generated = await generateRecipeWithAI(title.trim());
       setTitle(generated.title);
+      const isGenPreset = (CATEGORY_PRESETS as readonly string[]).includes(generated.category);
       setCategory(generated.category);
+      setIsCustomCategory(!isGenPreset && !!generated.category);
       if (generated.mealTypes && generated.mealTypes.length > 0) {
         setMealTypes(generated.mealTypes);
       }
@@ -227,7 +231,9 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({
     try {
       const parsed = await parseRawRecipeWithAI(rawText.trim());
       setTitle(parsed.title);
+      const isParsePreset = (CATEGORY_PRESETS as readonly string[]).includes(parsed.category);
       setCategory(parsed.category);
+      setIsCustomCategory(!isParsePreset && !!parsed.category);
       if (parsed.mealTypes && parsed.mealTypes.length > 0) {
         setMealTypes(parsed.mealTypes);
       }
@@ -265,6 +271,10 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({
     e.preventDefault();
     if (!title.trim()) {
       toast.warning('Nama masakan tidak boleh kosong!');
+      return;
+    }
+    if (isCustomCategory && !category.trim()) {
+      toast.warning('Silakan ketik nama jenis masakan manual!');
       return;
     }
 
@@ -415,12 +425,12 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({
         </div>
 
         {/* Jenis / Kategori Masakan (Badge) */}
-        <div className="space-y-2">
+        <div className="space-y-2.5">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
             <label className="block text-xs font-semibold text-sage-700 uppercase tracking-wider">
               Jenis / Kategori Masakan (Badge) <span className="text-red-500">*</span>
             </label>
-            <span className="text-[11px] text-sage-500">Klik badge cepat atau ketik jenis kustom</span>
+            <span className="text-[11px] text-sage-500">Pilih badge atau pilih 'Lainnya' untuk ketik manual</span>
           </div>
 
           {/* Quick Preset Badges */}
@@ -429,27 +439,58 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({
               <button
                 key={cat}
                 type="button"
-                onClick={() => setCategory(cat)}
+                onClick={() => {
+                  setCategory(cat);
+                  setIsCustomCategory(false);
+                }}
                 className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1 cursor-pointer ${
-                  category === cat
+                  !isCustomCategory && category === cat
                     ? 'bg-sage-600 text-white shadow-sm ring-2 ring-sage-300'
                     : 'bg-white hover:bg-sage-100 text-sage-800 border border-sage-200'
                 }`}
               >
                 <span>{cat}</span>
-                {category === cat && <Check className="w-3 h-3 ml-0.5" />}
+                {!isCustomCategory && category === cat && <Check className="w-3 h-3 ml-0.5" />}
               </button>
             ))}
+
+            {/* Tombol Lainnya */}
+            <button
+              type="button"
+              onClick={() => {
+                setIsCustomCategory(true);
+                if ((CATEGORY_PRESETS as readonly string[]).includes(category)) {
+                  setCategory('');
+                }
+              }}
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1 cursor-pointer ${
+                isCustomCategory
+                  ? 'bg-sage-600 text-white shadow-sm ring-2 ring-sage-300'
+                  : 'bg-white hover:bg-sage-100 text-sage-800 border border-sage-200'
+              }`}
+            >
+              <span>✨ Lainnya</span>
+              {isCustomCategory && <Check className="w-3 h-3 ml-0.5" />}
+            </button>
           </div>
 
-          <input
-            type="text"
-            required
-            placeholder="Atau ketik jenis olahan kustom (misal: Olahan Mie, Gulai, dsb)"
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-            className="w-full px-4 py-2.5 rounded-xl border border-sage-300 focus:border-sage-500 focus:ring-2 focus:ring-sage-200 outline-none text-sage-900 text-sm font-medium transition-all"
-          />
+          {/* Input Manual hanya tampil jika pilih 'Lainnya' */}
+          {isCustomCategory && (
+            <div className="pt-1 space-y-1 animate-fadeIn">
+              <label className="block text-xs font-semibold text-sage-700">
+                Ketik Jenis Masakan Manual <span className="text-red-500">*</span>:
+              </label>
+              <input
+                type="text"
+                required
+                autoFocus
+                placeholder="Contoh: Gulai, Soto, Rendang, Pepes, Dessert, dll."
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+                className="w-full px-4 py-2.5 rounded-xl border-2 border-sage-500 focus:ring-2 focus:ring-sage-200 outline-none text-sage-900 text-sm font-medium transition-all bg-white shadow-xs"
+              />
+            </div>
+          )}
         </div>
 
         {/* Porsi & Waktu Masak (Persiapan + Memasak) */}
